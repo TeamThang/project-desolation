@@ -6,6 +6,7 @@ import Home from '@/components/Home'
 import Law from '@/components/Law'
 import Profile from '@/components/Profile'
 import ProfileHello from '@/components/profile/hello'
+import Info from '@/components/head'
 
 Vue.use(Router)
 
@@ -52,6 +53,11 @@ export default new Router({
           component: ProfileHello
         }
       ]
+    },
+    {
+      path: '/info',
+      name: 'Info',
+      component: Info
     },
     {
       path: '*',

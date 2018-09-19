@@ -2,7 +2,8 @@
 
   <div class="lgContain">
     <div class="lgDetail pull-right">
-      <div class="bg"></div>
+      <div class="bg">法宝贝</div>
+      <p class="tips"></p>
       <input type="text" placeholder="请输入用户名或者邮箱" v-model="account" class="userNameLg" />
       <input type="password" placeholder="请输入密码" v-model="password" class="passWordLg" />
       <button id="agreeLg" pointer @click="register()">注册</button>
@@ -72,30 +73,46 @@ export default {
   width: 100%;
   height: 100%;
   position: relative;
+  background: url('./../assets/img/bg/bg1.jpg') 100% no-repeat;
 }
 .lgDetail {
   width: 3.5rem;
-  height: 4.4rem;
-  border: 0.01rem solid #ccc;
+  min-height: 4rem;
+  border: 0.01rem solid #eee;
   position: absolute;
   top: 50%;
   left: 50%;
   margin-left: -1.75rem;
   margin-top: -2.2rem;
   padding: 0.2rem;
+  background-color: #fefefe;
+  border-radius: 0.05rem;
+  box-shadow: 0 0.03rem 0.05rem rgba(0, 0, 0, 0.2);
 }
 .bg {
-  height: 1.6rem;
+  height: 0.7rem;
   border-bottom: 0.01rem solid #ccc;
-  margin: 0.2rem -0.2rem;
+  width: 100%;
+  line-height: 0.5rem;
+  font-size: 0.4rem;
+  font-weight: 700;
+  color: #277ce1;
 }
-
+.tips {
+  height: 0.2rem;
+  display: block;
+  padding: 0;
+  margin: 0;
+}
 .lgDetail input {
   height: 0.4rem;
   width: 100%;
-  border: 0.01rem solid #ccc;
+  border: 0.01rem solid #ddd;
+  color: rgb(38, 38, 38);
   margin: 0.05rem 0;
   padding-left: 0.1rem;
+  border-radius: 0.04rem;
+  font-size: 0.14rem;
 }
 
 #agreeLg {
@@ -109,6 +126,7 @@ export default {
   font-size: 0.18rem;
   color: white;
   font-weight: 900;
+  letter-spacing: 0.1rem;
 }
 #agreeLg:focus {
   box-shadow: 0 0 0.05rem #5068a9;
@@ -122,5 +140,8 @@ export default {
 .reg > a {
   flex: 1;
   color: #888;
+  text-align: center;
+  text-decoration: none;
+  color: #00a1d6;
 }
 </style>

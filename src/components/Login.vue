@@ -231,6 +231,6 @@ export default {
   color: #888;
   text-align: center;
   text-decoration: none;
-  color: #00a1d6
+  color: #00a1d6;
 }
 </style>
