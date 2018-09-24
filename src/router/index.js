@@ -5,8 +5,13 @@ import Register from '@/components/Register'
 import Home from '@/components/Home'
 import Law from '@/components/Law'
 import Profile from '@/components/Profile'
-import ProfileHello from '@/components/profile/hello'
 import Info from '@/components/head'
+import Profile_modifyInfo from '@/components/profile/modifyInfo'
+import Profile_info from '@/components/profile/info'
+import Profile_password from '@/components/profile/password'
+import Profile_avatar from '@/components/profile/avatar'
+import Profile_modifyEmail from '@/components/profile/email'
+import Profile_modifyPhone from '@/components/profile/phone'
 
 Vue.use(Router)
 
@@ -23,11 +28,6 @@ export default new Router({
       children: [
         {
           path: '/',
-          name: 'Law',
-          component: Law
-        },
-        {
-          path: '/law',
           name: 'Law',
           component: Law
         }
@@ -47,12 +47,31 @@ export default new Router({
       path: '/profile',
       name: 'Profile',
       component: Profile,
-      children: [
-        {
-          path: 'ProfileHello',
-          component: ProfileHello
-        }
-      ]
+      children: [{
+      	path: 'info',
+        component: Profile_info,
+        name: 'profile_info'
+      },{
+      	path: 'modifyInfo',
+        component: Profile_modifyInfo,
+        name: 'profile_modifyInfo'
+      },{
+      	path: 'avatar',
+        component: Profile_avatar,
+        name: 'profile_avatar'
+      },{
+      	path: 'modifyEmail',
+        component: Profile_modifyEmail,
+        name: 'profile_modifyEmail'
+      },{
+      	path: 'modifyPhone',
+        component: Profile_modifyPhone,
+        name: 'Profile_modifyPhone'
+      },{
+      	path: 'password',
+        component: Profile_password,
+        name: 'profile_password'
+      }]
     },
     {
       path: '/info',

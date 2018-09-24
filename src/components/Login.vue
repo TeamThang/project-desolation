@@ -4,7 +4,7 @@
 		<div class="lgDetail pull-right">
 			<div class="bg">法宝贝</div>
       <p class="tips">{{tips}} </p>
-			<input type="text" v-model="account" placeholder="请输入用户名或者邮箱" class="userNameLg" />
+			<input type="text" v-model="account" placeholder="请输入用户名或者邮箱或手机号" class="userNameLg" />
 			<input type="password" v-model="password" placeholder="请输入密码" class="passWordLg" />
       <div class="imgContain" v-cloak v-if="img">
          <!-- <img v-bind:src="imgUrl" alt="">  -->
@@ -27,48 +27,8 @@
 
 <script>
 import axios from "axios";
-// ajax 对象 
- function ajaxObject() { 
- var xmlHttp; 
- try { 
- // Firefox, Opera 8.0+, Safari 
- xmlHttp = new XMLHttpRequest(); 
- } 
- catch (e) { 
- // Internet Explorer 
- try { 
- xmlHttp = new ActiveXObject("Msxml2.XMLHTTP"); 
- } catch (e) { 
- try { 
- xmlHttp = new ActiveXObject("Microsoft.XMLHTTP"); 
- } catch (e) { 
- alert("您的浏览器不支持AJAX！"); 
- return false; 
- } 
- } 
- } 
- return xmlHttp; 
- } 
-// ajax post请求： 
-  function ajaxPost ( url , data , fnSucceed , fnFail , fnLoading ) { 
-    var ajax = ajaxObject(); 
-    ajax.open( "post" , url , true ); 
-    ajax.setRequestHeader( "Content-Type" , "application/x-www-form-urlencoded" ); 
-    ajax.onreadystatechange = function () { 
-    if( ajax.readyState == 4 ) { 
-    if( ajax.status == 200 ) { 
-    fnSucceed( ajax.responseText ); 
-    } 
-    else { 
-    fnFail( "HTTP请求错误！错误码："+ajax.status ); 
-    } 
-    } 
-    else { 
-    fnLoading(); 
-    } 
-    }; 
-    ajax.send( data ); 
-  } 
+import Ajax from "./../lib/ajax";
+import Config from "./../lib/config";
 export default {
   name: "Login",
   data() {
@@ -87,9 +47,6 @@ export default {
   methods: {
     login() {
       var that = this;
-      console.log(that.imgResult);
-      console.log(that.imgInputResult);
-
       if (!that.account) {
         that.tips = "请输入账号！";
         return;
@@ -101,43 +58,24 @@ export default {
       } else if (that.imgResult != that.imgInputResult) {
         that.tips = "验证码结果错误！";
       } else {
-        var Account = "",
-          Email = "";
-        if (that.account.indexOf("@") >= 0) {
-          Email = that.account;
-        } else {
-          Account = that.account;
+        var loginData = {
+          password: that.password
         }
-        console.log(Email);
-        console.log(Account);
-        // axios.post('http://47.97.197.176:8888/auth/login',{
-        //     account: Account,
-        //     email: Email,
-        //     password: that.password
-        // }).then(function(response) {
-        //   console.log(response);
-        //   if (response.status == 200 && response.data.code == 0) {
-        //     //表示登录成功
-        //     this.$router.push({ path: "/home" });
-        //   } else {
-        //     that.tips = response.data.msg;
-        //   }
-        // });
-        ajaxPost('http://47.97.197.176:8888/auth/login',JSON.stringify({
-            account: Account,
-            email: Email,
-            password: that.password
-        }),function(data){
-          data = JSON.parse(data)
-          console.log(typeof data)
+        if (that.account.indexOf("@") >= 0) {
+          loginData.email = that.account;
+        } else {
+          loginData.account = that.account;
+        }
+        Ajax(Config.AjaxUrl + '/auth/login',loginData,function(data){
           if(data.code == 0) {
+            console.log('cookie', document.cookie)
             that.$router.push({ path: "/home" });
           }else{
             that.tips = data.msg
           }
         },function(error){
           that.tips = error
-        },function(){})
+        })
       }
     },
     getPictureResult: function() {

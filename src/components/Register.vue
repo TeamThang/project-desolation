@@ -3,9 +3,11 @@
   <div class="lgContain">
     <div class="lgDetail pull-right">
       <div class="bg">法宝贝</div>
-      <p class="tips"></p>
-      <input type="text" placeholder="请输入用户名或者邮箱" v-model="account" class="userNameLg" />
+      <p class="tips">{{tips}}</p>
+      <input type="text" placeholder="请输入账号" v-model="account" class="userNameLg" />
       <input type="password" placeholder="请输入密码" v-model="password" class="passWordLg" />
+      <input type="email" placeholder="请输入邮箱" v-model="email" class="emailLg" />
+      <input type="name" placeholder="请输入姓名" v-model="name" class="nameLg" />
       <button id="agreeLg" pointer @click="register()">注册</button>
       <!-- <button id="agreeLg" >登录</button> -->
       <div class="reg"  text-right>
@@ -21,12 +23,16 @@
 
 <script>
 import axios from "axios";
+import Ajax from "./../lib/ajax";
 export default {
   name: "Register",
   data() {
     return {
       account: '',
       password: '',
+      email: '',
+      name: '',
+      tips: ""
     };
   },
   methods: {
@@ -41,28 +47,27 @@ export default {
         that.tips = "请输入密码！";
         return;
       }else {
-         axios({
-          method: "post",
-          data: {
+         Ajax('http://47.92.38.167:8888/account/register',{
             account: that.account,
-            password: that.password
-          },
-          url: "http://47.97.197.176:8888/account/regist",
-          responseType: "json"
-        }).then(function(response) {
-          console.log(response);
-          if (response.status == 200 && response.data.code == 0) {
+            password: that.password,
+            email: that.email,
+            name: that.name
+        },function(data) {
+          console.log(data.code,typeof data)
+          if (data.code === 0) {
             //表示注册成功
-            this.$router.push({ path: "/home" });
+            that.tips = "注册成功,请登录";
+            setTimeout(function(){
+              that.$router.push({ path: "/login" });
+            },1000)
           } else {
-            that.tips = response.data.msg;
+            console.log(data.msg)
+            that.tips = data.msg;
           }
+        },function(data){
+          that.tips = data.msg;
         });
       }
-
-
-
-  
     }
   }
 };
@@ -101,8 +106,12 @@ export default {
 .tips {
   height: 0.2rem;
   display: block;
+  line-height: 0.2rem;
   padding: 0;
   margin: 0;
+  color: red;
+  font-weight: bold;
+  font-size: 0.12rem;
 }
 .lgDetail input {
   height: 0.4rem;
