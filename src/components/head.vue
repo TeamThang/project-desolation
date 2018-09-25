@@ -1,44 +1,50 @@
 <template>
 <el-row class="head-el-row">
   <el-col :span="4"><div class="grid-content bg-purple-dark"></div></el-col>
-  <el-col :span="2">
-    <div class="head-logo">
-      法宝贝
-    </div>
+  <el-col :span="4">
+    <router-link class="head-item" to="/home">
+      <div class="head-logo">
+        法宝贝
+      </div>
+    </router-link>
   </el-col>
   <el-col :span="2">
     <div class="head-item" v-if="headItem[0]">
-      {{headItem[0] ? headItem[0].name : ''}}
+      <router-link  class="head-link" :to="headItem[0] ? headItem[0].path : '/home'">
+        {{headItem[0] ? headItem[0].name : ''}}
+      </router-link>
     </div>
   </el-col>
   <el-col :span="2">
     <div class="head-item" v-show="headItem[1]">
-      {{headItem[1] ? headItem[1].name : ''}}
+      <router-link  class="head-link" :to="headItem[1] ? headItem[1].path : '/home'">
+        {{headItem[1] ? headItem[1].name : ''}}
+      </router-link>
     </div>
   </el-col>
   <el-col :span="2">
     <div class="head-item" v-show="headItem[2]">
-      {{headItem[2] ? headItem[2].name : ''}}
+      <router-link  class="head-link" :to="headItem[2] ? headItem[2].path : '/home'">
+        {{headItem[2] ? headItem[2].name : ''}}
+      </router-link>
     </div>
   </el-col>
   <el-col :span="2">
     <div class="head-item" v-show="headItem[3]">
-      {{headItem[3] ? headItem[3].name : ''}}
+      <router-link  class="head-link" :to="headItem[3] ? headItem[3].path : '/home'">
+        {{headItem[3] ? headItem[3].name : ''}}
+      </router-link>
     </div>
   </el-col>
   <el-col :span="2">
     <div class="head-item" v-show="headItem[4]">
-      {{headItem[4] ? headItem[4].name : ''}}
-    </div>
-  </el-col>
-  <el-col :span="2">
-    <div class="head-item" v-show="headItem[4]">
-      {{headItem[5] ? headItem[5].name : ''}}
+      <router-link  class="head-link" :to="headItem[4] ? headItem[4].path : '/home'">
+        {{headItem[4] ? headItem[4].name : ''}}
+      </router-link>
     </div>
   </el-col>
   <el-col :span="2">
     <div class="grid-content bg-purple-dark">
-
       <el-header style="text-align: right;">
         <el-dropdown>
           <span class="el-dropdown-link font-white">
@@ -80,8 +86,8 @@ import Config from "./../lib/config";
         isLogin: false,
         right: {
           'F': [{name: '代理人机构查询', path: '/agent'},{name:'律师推荐',path:'/lawyer'},{name:'知识产权保险',path:'/insurance'}],
-          'P': ['专利信息查询','代理人机构查询','律所信息查询','知识产权保险','律师推荐'],
-          'B': ['代理人机构查询','诉前服务','律师推荐']
+          'P': [{name:'专利信息查询', path: '/patent'},{name:'代理人机构查询',path:'/agent'},{name:'律所信息查询',path:'lawoffice'},{name:'知识产权保险',path:'/insurance'},{name:'律师推荐',path:'/lawyer'}],
+          'B': [{name:'代理人机构查询',path: '/agent'},{name:'诉前服务',path:'/litigation'},{name:'律师推荐',path:'/lawyer'}]
         },
         headItem: []
       }
@@ -140,12 +146,14 @@ import Config from "./../lib/config";
     background: #00a1d7;
     text-align: center;
     line-height: 60px;
-    color: #ffffff;
     cursor: pointer;
     font-size: 0.2rem;
   }
+  .head-link{
+    color: #ffffff;
+  }
   .head-logo{
-    border-bottom: 0.01rem solid #ccc;
+    text-align: left;
     width: 100%;
     line-height: 0.5rem;
     font-size: 0.4rem;

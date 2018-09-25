@@ -116,6 +116,7 @@
         if(!that.changeEmail) {
         this.$alert('请输入邮箱地址', '', {
           confirmButtonText: '确定',
+          showClose: false
         })
         } else {
             //var action = that.$alert('正在发送验证码，请稍后...', '')
@@ -126,6 +127,7 @@
                 if(data.code == 0){
                     that.$alert(data.msg || '验证码已发送', '', {
                         confirmButtonText: '确定',
+                        showClose: false,
                         callback: action => {
                             that.changeEmailSend = true
                         }
@@ -133,11 +135,13 @@
                 } else {
                     that.$alert(data.msg || '验证码发送失败，请重试', '', {
                         confirmButtonText: '确定',
+                        showClose: false
                     })
                 }
             },function(){
                 that.$alert('验证码发送失败，请重试', '', {
                     confirmButtonText: '确定',
+                        showClose: false
                 })
             })
         }
@@ -147,6 +151,7 @@
       if(!that.changeEmailVerify) {
         this.$alert('请输入验证码', '', {
           confirmButtonText: '确定',
+           showClose: false
         })
       } else {
           Ajax(Config.AjaxUrl + '/account/change_email', {
@@ -158,18 +163,21 @@
             if(data.code == 0){
                 that.$alert(data.msg || '邮箱修改成功', '', {
                     confirmButtonText: '确定',
+                    showClose: false,
                     callback: action => {
                         location.reload()
                     }
                 })
             } else {
                 that.$alert(data.msg || '邮箱修改失败，请重试', '', {
-                    confirmButtonText: '确定'
+                    confirmButtonText: '确定',
+                    showClose: false
                 })
             }
         },function(){
             that.$alert('邮箱修改失败，请重试', '', {
                 confirmButtonText: '确定',
+                showClose: false ,
                 callback: action => {
                     that.changeEmailSend = false
                 }

@@ -5,6 +5,7 @@ import Register from '@/components/Register'
 import Home from '@/components/Home'
 import Law from '@/components/Law'
 import Profile from '@/components/Profile'
+import Agent from '@/components/Agent'
 import Info from '@/components/head'
 import Profile_modifyInfo from '@/components/profile/modifyInfo'
 import Profile_info from '@/components/profile/info'
@@ -32,6 +33,11 @@ export default new Router({
           component: Law
         }
       ]
+    },
+    {
+      path: '/agent',
+      name: 'Agent',
+      component: Agent
     },
     {
       path: '/login',

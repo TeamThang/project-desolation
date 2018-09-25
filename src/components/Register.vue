@@ -75,10 +75,9 @@ export default {
 
 <style scoped>
 .lgContain {
-  width: 100%;
-  height: 100%;
   position: relative;
-  background: url('./../assets/img/bg/bg1.jpg') 100% no-repeat;
+  background: url('./../assets/img/bg/bg1.jpg') center center no-repeat;
+  background-size: cover;
 }
 .lgDetail {
   width: 3.5rem;
