@@ -16,8 +16,24 @@
             </el-input>
           </div>
         </div>
-        <div class="agentResult" v-show="agentManResult">
-          
+        
+        <ul class="agent_result">
+          <li v-for="item in agentManResult">
+            <div class="agent_item" v-show="agentSelect==1">
+              <div class="agent_avatar" v-bind:class="{ famale: item.gender == '女' }"></div>
+              <div class="agent_left">
+                <div class="agent_name">{{agent_name}}</div>
+                <div class="agent_spec">证书号：{{item.certNo}}</div>
+              </div>
+              <div class="agent_right">
+                <div class="agent_spec">性别{{item.gender}}</div>
+                <div class="agent_spec">证专业：{{item.major}}</div>
+                <div class="agent_spec">律师事务所：{{item.cp_name}}</div>
+              </div>
+            </div>
+          </li>
+        </ul>
+            
         </div>
       </div>
     </div>
@@ -38,7 +54,8 @@ export default {
       agentInput: '',
       agentSelect: '',
       agentSearchloading: false,
-      agentManResult: null
+      agentManResult: [],
+      agent_name: ''
     }
   },
   methods: {
@@ -62,7 +79,8 @@ export default {
         },function(data){
           that.agentSearchloading = false;
           if(data.code == 0){
-
+            that.agent_name = that.agentInput
+            that.agentManResult = data.data
           }else{
             that.$alert('未查询到相关结果', '', {
               confirmButtonText: '确定',
@@ -77,7 +95,27 @@ export default {
           })
         })
       } else {//代理机构搜索
-
+        that.agentSearchloading = true;
+        Ajax(Config.AgentUrl + '/agent_company',{
+          name: that.agentInput
+        },function(data){
+          that.agentSearchloading = false;
+          if(data.code == 0){
+            that.agent_name = that.agentInput
+            that.agentManResult = data.data
+          }else{
+            that.$alert('未查询到相关结果', '', {
+              confirmButtonText: '确定',
+              showClose: false
+            })
+          }
+          console.log('data',data)
+        },function(){
+          that.$alert('查询服务维护中，请稍后再试', '', {
+            confirmButtonText: '确定',
+            showClose: false
+          })
+        })
       }
     }
   }
@@ -94,10 +132,8 @@ export default {
 	.agent_wrap{
     overflow: hidden;
     width: 1280px;
-    height: 100%;
     margin: 10px auto 40px;
     border-radius: 4px;
-    
   }
   .agent_content{
     width: 100%;
@@ -124,5 +160,56 @@ export default {
   }
   .input-with-select .el-input-group__prepend {
     background-color: #fff;
+  }
+  .agent_result{
+    width: 980px;
+    margin: 10px auto 40px;
+  }
+  .agent_result li{
+    list-style: none;
+    margin-top: 30px;
+  }
+  .agent_item{
+    height: 150px;
+    border: 1px solid #e1e2e5;
+    -webkit-box-shadow: 0 2px 4px rgba(0,0,0,.14);
+    box-shadow: 0 2px 4px rgba(0,0,0,.14);
+    padding: 11px;
+    border-radius: 3px;
+  }
+  .agent_item .agent_avatar{
+    float: left;
+    height: 128px;
+    width: 128px;
+    background: url('./../assets/img/info/male.png') center center no-repeat;
+  }
+  .agent_item .agent_avatar.female{
+    background: url('./../assets/img/info/female.png') center center no-repeat;
+  }
+  .agent_item .content{
+
+  }
+  .agent_item .agent_left{
+    float: left;
+    height: 128px;
+    width: 300px;
+    padding: 0 30px;
+    font-size: 0.15rem;
+  }
+  .agent_item .agent_right{
+    float: left;
+    height: 128px;
+    width: 400px;
+    padding: 0 30px 0 0;
+    font-size: 0.15rem;
+  }
+  .agent_item .agent_name{
+    font-size: 0.3rem;
+    padding: 20px 0;
+    height: 84px;
+  }
+  .agent_item .agent_spec{
+    padding: 10px 0;
+    height: 42px;
   }
 </style>
