@@ -18,22 +18,69 @@
         </div>
         
         <ul class="agent_result">
-          <li v-for="item in agentManResult">
-            <div class="agent_item" v-show="agentSelect==1">
-              <div class="agent_avatar" v-bind:class="{ famale: item.gender == '女' }"></div>
+          <el-collapse v-model="activeName" accordion v-show="agentSelect==1">
+          <li class="agent_result_li" v-for="(item, index) in agentManResult">
+            <div class="agent_item" >
+              <div class="agent_avatar" v-bind:class="{ female: item.gender == '女' }"></div>
               <div class="agent_left">
                 <div class="agent_name">{{agent_name}}</div>
                 <div class="agent_spec">证书号：{{item.certNo}}</div>
               </div>
               <div class="agent_right">
                 <div class="agent_spec">性别{{item.gender}}</div>
-                <div class="agent_spec">证专业：{{item.major}}</div>
+                <div class="agent_spec">专业：{{item.major}}</div>
                 <div class="agent_spec">律师事务所：{{item.cp_name}}</div>
               </div>
             </div>
+            <el-collapse-item title="详细信息" :name=index>
+                <div class="agent_patent_count">案件数量：{{item.patent_data.count}}</div>
+                <div class="agent_patent_count">案件分布:</div>
+                <ul class="agent_patent_ul">
+                  <li class="agent_patent_li" v-for="(value, key) in item.patent_data.statistic_info.total">
+                      <div>{{key}}：{{value}}</div>
+                  </li>
+                </ul>
+            </el-collapse-item>
           </li>
+          </el-collapse>
+
+          <el-collapse v-model="activeCompany" accordion v-if="agentSelect==2 && agentCompanyResult">
+            <div class="agent_company_item">
+              <div class="agent_company_name">{{agentCompanyResult.name}}<span>所长: {{agentCompanyResult.leader}}</span> </div>
+              <div class="agent_company_address">地址：{{agentCompanyResult.address}}</div>
+              <div class="agent_company_cont">
+                <div class="agen_company_left">
+                  <div class="agent_spec">邮箱：{{agentCompanyResult.email}}</div>
+                  <div class="agent_spec">传真：{{agentCompanyResult.fax}}</div>
+                  <div class="agent_spec">电话：{{agentCompanyResult.phone}}</div>
+                </div>
+                <div class="agent_company_right">
+                  <div class="agent_spec">律师数量：{{agentCompanyResult.agentNum}}</div>
+                  <div class="agent_spec">成立时间：{{agentCompanyResult.stablish}}</div>
+                  <div class="agent_spec">网址：{{agentCompanyResult.website}}</div>
+                </div>
+              </div>
+              <el-collapse-item title="人员详细信息" :name="1">
+                  <ul class="agent_result">
+                    <li class="agent_result_li" v-for="(a, i) in agentCompanyResult.agents">
+                      <div class="agent_item" >
+                        <div class="agent_avatar" v-bind:class="{ female: a.gender == '女' }"></div>
+                        <div class="agent_left">
+                          <div class="agent_name">{{a.cp_name}}</div>
+                          <div class="agent_spec">证书号：{{a.certNo}}</div>
+                        </div>
+                        <div class="agent_right">
+                          <div class="agent_spec"></div>
+                          <div class="agent_spec">性别：{{a.gender}}</div>
+                          <div class="agent_spec">专业：{{a.major}}</div>
+                        </div>
+                      </div>
+                    </li>
+                  </ul>
+              </el-collapse-item>
+            </div>
+          </el-collapse>
         </ul>
-            
         </div>
       </div>
     </div>
@@ -55,7 +102,10 @@ export default {
       agentSelect: '',
       agentSearchloading: false,
       agentManResult: [],
-      agent_name: ''
+      agentCompanyResult: null,
+      agent_name: '',
+      activeName: '1',
+      activeCompany: '1'
     }
   },
   methods: {
@@ -80,6 +130,7 @@ export default {
           that.agentSearchloading = false;
           if(data.code == 0){
             that.agent_name = that.agentInput
+            that.agentCompanyResult = null
             that.agentManResult = data.data
           }else{
             that.$alert('未查询到相关结果', '', {
@@ -102,7 +153,8 @@ export default {
           that.agentSearchloading = false;
           if(data.code == 0){
             that.agent_name = that.agentInput
-            that.agentManResult = data.data
+            that.agentManResult = []
+            that.agentCompanyResult = data.data
           }else{
             that.$alert('未查询到相关结果', '', {
               confirmButtonText: '确定',
@@ -164,10 +216,11 @@ export default {
   .agent_result{
     width: 980px;
     margin: 10px auto 40px;
+    padding: 0;
   }
-  .agent_result li{
+  .agent_result .agent_result_li{
     list-style: none;
-    margin-top: 30px;
+    margin-bottom: 30px;
   }
   .agent_item{
     height: 150px;
@@ -185,9 +238,6 @@ export default {
   }
   .agent_item .agent_avatar.female{
     background: url('./../assets/img/info/female.png') center center no-repeat;
-  }
-  .agent_item .content{
-
   }
   .agent_item .agent_left{
     float: left;
@@ -211,5 +261,96 @@ export default {
   .agent_item .agent_spec{
     padding: 10px 0;
     height: 42px;
+  }
+  .el-collapse{
+    border-top: none;
+    border-bottom: none;
+  }
+  .agent_result_li .el-collapse-item__header{
+    height: 150px;
+    margin-top: -150px;
+    font-size: 0.15rem;
+    line-height: 150px;
+    position: relative;
+    background: transparent;
+  }
+  .agent_result_li .el-collapse-item__header .el-collapse-item__arrow{
+    line-height: 150px;
+    position: absolute;
+    right: 0;
+  }
+  .agent_result_li .el-collapse-item__content{
+    background-color: #f8f8f8;
+    padding: 20px;
+    background-color: #f8f8f8;
+    border-bottom: 1px solid #e1e2e5;
+    border-right: 1px solid #e1e2e5;
+    border-left: 1px solid #e1e2e5;
+    -webkit-box-shadow: 0 2px 4px rgba(0,0,0,.14);
+    box-shadow: 0 2px 4px rgba(0,0,0,.14);
+  }
+  .agent_patent_ul{
+    list-style: none;
+    padding: 0;
+  }
+  .agent_patent_li{
+    list-style: none;
+    display: block;
+    padding: 0;
+    font-size: 0.15rem;
+  }
+  .agent_patent_count{
+    font-size: 0.18rem;
+  }
+  .agent_company_item{
+    width: 980px;
+    padding: 20px;
+    border: 1px solid #e1e2e5;
+    -webkit-box-shadow: 0 2px 4px rgba(0,0,0,.14);
+    box-shadow: 0 2px 4px rgba(0,0,0,.14);
+  }
+  .agent_company_item .agent_company_name{
+    font-size: 0.3rem;
+    padding: 15px 0;
+    height: 84px;
+  }
+  .agent_company_item .agent_company_name span{
+    font-size: 0.18rem;
+    padding: 0 30px;
+  }
+  .agent_company_address{
+    font-size: 0.18rem;
+    margin-bottom: 20px;
+  }
+  .agent_company_item .agent_company_cont{
+    width: 100%;
+    height: 150px;
+    font-size: 0.16rem;
+  }
+  .agent_company_item .agen_company_left{
+    float: left;
+    width: 50%;
+  }
+  .agent_company_item .agen_company_right{
+    float: right;
+    width: 50%;
+  }
+  .agent_company_item .agent_spec{
+    padding: 10px 0;
+  }
+  .agent_company_item .el-collapse-item__header{
+    text-align: center;
+    font-size: 0.18rem;
+    font-weight: 700;
+  }
+  .agent_company_item .el-collapse-item__wrap{
+    border-bottom: none;
+  }
+  .agent_company_item .agent_result{
+    width: 938px;
+    margin: 10px auto 0;
+  }
+  .agent_company_item .el-collapse-item__content{
+    padding-bottom: 0;
   }
 </style>
