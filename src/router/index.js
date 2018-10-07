@@ -6,6 +6,9 @@ import Home from '@/components/Home'
 import Law from '@/components/Law'
 import Profile from '@/components/Profile'
 import Agent from '@/components/Agent'
+import Patent from '@/components/Patent'
+import Lawyer from '@/components/Lawyer'
+import Insurance from '@/components/Insurance'
 import Info from '@/components/head'
 import Profile_modifyInfo from '@/components/profile/modifyInfo'
 import Profile_info from '@/components/profile/info'
@@ -38,6 +41,21 @@ export default new Router({
       path: '/agent',
       name: 'Agent',
       component: Agent
+    },
+    {
+      path: '/insurance',
+      name: 'Insurance',
+      component: Insurance
+    },
+    {
+      path: '/lawyer',
+      name: 'Lawyer',
+      component: Lawyer
+    },
+    {
+      path: '/patent',
+      name: 'Patent',
+      component: Patent
     },
     {
       path: '/login',

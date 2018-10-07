@@ -207,10 +207,10 @@ export default {
     width: 800px;
     margin: 0 auto;
   }
-  .el-select .el-input {
+  .agent_wrap .el-select .el-input {
     width: 130px;
   }
-  .input-with-select .el-input-group__prepend {
+  .agent_wrap .input-with-select .el-input-group__prepend {
     background-color: #fff;
   }
   .agent_result{
