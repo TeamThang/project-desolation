@@ -85,7 +85,7 @@ import Config from "./../lib/config";
         name: '',
         isLogin: false,
         right: {
-          'F': [{name: '代理人机构查询', path: '/agent'},{name:'专利信息查询', path: '/patent'},{name:'律师推荐',path:'/lawyer'},{name:'知识产权保险',path:'/insurance'}],
+          'F': [{name: '代理人机构查询', path: '/agent'},{name:'专利信息查询', path: '/patent'},{name:'知识产权案件',path:'/case'},{name:'知识产权保险',path:'/insurance'}],
           'P': [{name:'专利信息查询', path: '/patent'},{name:'代理人机构查询',path:'/agent'},{name:'律所信息查询',path:'lawoffice'},{name:'知识产权保险',path:'/insurance'},{name:'律师推荐',path:'/lawyer'}],
           'B': [{name:'代理人机构查询',path: '/agent'},{name:'诉前服务',path:'/litigation'},{name:'律师推荐',path:'/lawyer'}]
         },
@@ -147,9 +147,12 @@ import Config from "./../lib/config";
     text-align: center;
     line-height: 60px;
     cursor: pointer;
-    font-size: 0.2rem;
+    font-size: 0.16rem;
   }
   .head-link{
+    display: inline-block;
+    width: 100%;
+    height: 100%;
     color: #ffffff;
   }
   .head-logo{

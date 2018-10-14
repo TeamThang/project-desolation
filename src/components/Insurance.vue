@@ -1,6 +1,7 @@
 <template>
   <div id="law">
-      这是律师的页面
+    <Head></Head>
+    <router-view></router-view>
   
 
   
@@ -8,10 +9,13 @@
 </template>
 
 <script>
+import Head from '@/components/head';
+import Config from './../lib/config';
+import Ajax from './../lib/ajax';
 export default {
   name: "Insurance",
   components:{
-
+    Head: Head
   },
   data() {
     return {

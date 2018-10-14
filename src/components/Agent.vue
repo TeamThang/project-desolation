@@ -140,6 +140,7 @@ export default {
           }
           console.log('data',data)
         },function(){
+          that.agentSearchloading = false;
           that.$alert('查询服务维护中，请稍后再试', '', {
             confirmButtonText: '确定',
             showClose: false
@@ -163,6 +164,7 @@ export default {
           }
           console.log('data',data)
         },function(){
+          that.agentSearchloading = false;
           that.$alert('查询服务维护中，请稍后再试', '', {
             confirmButtonText: '确定',
             showClose: false

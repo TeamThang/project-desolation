@@ -7,12 +7,7 @@
         <div class="patent_top" v-loading="patentSearchloading">
           <p class="patent_top_title">专利查询</p>
           <div class="patent_search">
-              <el-select v-model="patentTypeSelect" slot="prepend" placeholder="请选择专利类型"   class="input-select-type">
-                <li v-for="(item, index) in allType" class="noneLi">
-                  <el-option  :value="item.classify_no" :label="item.classify_no + ' ' + item.classify_info"></el-option>
-                </li>
-              </el-select>
-              <el-input placeholder="请输入内容" v-model="patentInput" class="input-with-select">
+              <el-input placeholder="请输入专利号" v-model="patentInput" class="input-with-select">
                 <el-button slot="append" icon="el-icon-search" @click="patentSearchFunc()"></el-button>
               </el-input>
           </div>
@@ -56,7 +51,6 @@ export default {
   data () {
     return {
       patentInput: '',
-      patentTypeSelect:'',
       patentSearchloading: false,
       patentResult: null,
       patent_name: '',
@@ -70,12 +64,7 @@ export default {
     patentSearchFunc(){
       var that = this;
       console.log('select',that.patentTypeSelect)
-      if(!that.patentTypeSelect){
-        that.$alert('请选择专利类型', '', {
-         confirmButtonText: '确定',
-          showClose: false
-        })
-      }else if(!that.patentInput){
+      if(!that.patentInput){
         that.$alert('请输入专利号', '', {
           confirmButtonText: '确定',
           showClose: false
@@ -252,9 +241,9 @@ export default {
     margin-right: 10px; 
   }
   .patent_wrap .input-with-select .el-input-group{
-    width: 300px;
+    width: 500px;
   }
   .patent_wrap .input-with-select{
-    width: 490px;
+    width: 500px;
   }
 </style>

@@ -7,7 +7,7 @@ import Law from '@/components/Law'
 import Profile from '@/components/Profile'
 import Agent from '@/components/Agent'
 import Patent from '@/components/Patent'
-import Lawyer from '@/components/Lawyer'
+import Case from '@/components/Case'
 import Insurance from '@/components/Insurance'
 import Info from '@/components/head'
 import Profile_modifyInfo from '@/components/profile/modifyInfo'
@@ -48,9 +48,9 @@ export default new Router({
       component: Insurance
     },
     {
-      path: '/lawyer',
-      name: 'Lawyer',
-      component: Lawyer
+      path: '/case',
+      name: 'Case',
+      component: Case
     },
     {
       path: '/patent',
