@@ -32,7 +32,7 @@
                 <div class="agent_spec">律师事务所：{{item.cp_name}}</div>
               </div>
             </div>
-            <el-collapse-item title="详细信息" :name=index>
+            <el-collapse-item title="详细信息" :name=index @click="LoadingAgentChart(this, index)">
                 <div class="agent_patent_count">案件数量：{{item.patent_data.count}}</div>
                 <div class="agent_patent_count">案件分布:</div>
                 <ul class="agent_patent_ul">
@@ -40,6 +40,9 @@
                       <div>{{key}}：{{value}}</div>
                   </li>
                 </ul>
+                <div class="agent_charts">
+                  <Bing :info=item.patent_data.statistic_info.total></Bing>
+                </div>
             </el-collapse-item>
           </li>
           </el-collapse>
@@ -89,12 +92,14 @@
 
 <script>
 import Head from '@/components/head';
+import Bing from '@/components/charts/bing';
 import Config from './../lib/config';
 import Ajax from './../lib/ajax';
 export default {
   name: 'Agent',
   components:{
-    Head: Head
+    Head: Head,
+    Bing: Bing
   },
   data () {
     return {
@@ -105,7 +110,8 @@ export default {
       agentCompanyResult: null,
       agent_name: '',
       activeName: '1',
-      activeCompany: '1'
+      activeCompany: '1',
+      agentDetail:[]
     }
   },
   methods: {
@@ -172,6 +178,22 @@ export default {
         })
       }
     }
+  },
+  watch: {
+    activeName(val){
+      var that = this;
+      if(val !== '' && !that.agentDetail[val]){
+        Ajax(Config.AgentUrl + '/patent_by_agname',{
+          name: that.agent_name,
+          agency: that.agentManResult[val].cp_name
+        },function(data){
+          if(data.code == 0){
+            that.agentDetail[val] = data.data
+            console.log(that.activeName, data)
+          }
+        },function(){})
+      }
+　　}
   }
 }
 </script>
@@ -300,6 +322,10 @@ export default {
     display: block;
     padding: 0;
     font-size: 0.15rem;
+  }
+  .agent_result_li .agent_charts{
+    width: 500px;
+    height: 600px;
   }
   .agent_patent_count{
     font-size: 0.18rem;
