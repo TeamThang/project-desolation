@@ -3,22 +3,22 @@
   	<Head></Head>
     <router-view></router-view>
     <div class="agent_wrap">
+      <el-tabs v-model="agent_nav_active_name" @tab-click="handleClick">
+        <el-tab-pane class="agent_nav_title" label="代理人查询" name="first"></el-tab-pane>
+        <el-tab-pane class="agent_nav_title" label="代理机构查询" name="second"></el-tab-pane>
+      </el-tabs>
       <div class="agent_content">
         <div class="agent_top" v-loading="agentSearchloading">
-          <p class="agent_top_title">代理人查询</p>
+          <p class="agent_top_title" v-show="agent_nav_active_name=='first'">代理人查询</p>
+          <p class="agent_top_title" v-show="agent_nav_active_name=='second'">代理机构查询</p>
           <div class="agent_search">
-            <el-input placeholder="请输入内容" v-model="agentInput" class="input-with-select">
-              <el-select v-model="agentSelect" slot="prepend" placeholder="请选择">
-                <el-option label="代理人" value="1"></el-option>
-                <el-option label="代理机构" value="2"></el-option>
-              </el-select>
-              <el-button slot="append" icon="el-icon-search" @click="agentSearchFunc()"></el-button>
-            </el-input>
+            <el-input placeholder="请输入内容" v-model="agentInput" class="input-with-select"></el-input>
+            <el-button class="agent_input_button" icon="el-icon-search" @click="agentSearchFunc()">立即搜索</el-button>
           </div>
         </div>
         
         <ul class="agent_result">
-          <el-collapse v-model="activeName" accordion v-show="agentSelect==1">
+          <el-collapse v-model="activeName" accordion v-if="agentManResult!=null" v-show="agent_nav_active_name == 'first'">
           <li class="agent_result_li" v-for="(item, index) in agentManResult" :key="index">
             <div class="agent_item" >
               <div class="agent_avatar" v-bind:class="{ female: item.gender == '女' }"></div>
@@ -54,7 +54,7 @@
           </li>
           </el-collapse>
 
-          <el-collapse  accordion v-if="agentSelect==2 && agentCompanyResult != null">
+          <el-collapse  accordion v-if="agentCompanyResult!=null" v-show="agent_nav_active_name == 'second'">
             <div class="agent_company_item">
               <div class="agent_company_name">{{agentCompanyResult.name}}<span>所长: {{agentCompanyResult.leader}}</span> </div>
               <div class="agent_company_address">地址：{{agentCompanyResult.address}}</div>
@@ -109,10 +109,11 @@ export default {
   },
   data () {
     return {
+      agent_nav_active_name: 'first',
       agentInput: '',
       agentSelect: '',
       agentSearchloading: false,
-      agentManResult: [],
+      agentManResult: null,
       agentCompanyResult: null,
       agent_name: '',
       activeName: '1',
@@ -122,33 +123,32 @@ export default {
     }
   },
   methods: {
+    handleClick(){
+      this.agentManResult = null;
+      this.agentCompanyResult = null;
+    },
     changeToAgent(name){
       this.agentInput = name;
-      this.agentSelect = 1
+      this.agent_nav_active_name = 'first';
       console.log('agentSelect', this.agentSelect)
       console.log('agentSelect.value', this.agentSelect.value)
-      this.agentSearchFunc(1)
+      this.agentSearchFunc()
     },
     changeToCompany(name){
       this.agentInput = name;
-      this.agentSelect = 2
-      this.agentSearchFunc(2)
+      this.agent_nav_active_name = 'second';
+      this.agentSearchFunc()
     },
     agentSearchFunc(){
       var that = this;
-      that.agentManResult = []
-      that.agentCompanyResult = []
-      if(!that.agentSelect){
-        that.$alert('请选择类型', '', {
-         confirmButtonText: '确定',
-          showClose: false
-        })
-      }else if(!that.agentInput){
+      that.agentManResult = null;
+      that.agentCompanyResult = null;
+      if(!that.agentInput){
         that.$alert('请输入内容', '', {
           confirmButtonText: '确定',
           showClose: false
         })
-      }else if(that.agentSelect == 1){  //代理人搜索
+      }else if(that.agent_nav_active_name == 'first'){  //代理人搜索
         that.agentSearchloading = true;
         Ajax(Config.AgentUrl + '/agent_by_name',{
           name: that.agentInput
@@ -156,7 +156,6 @@ export default {
           that.agentSearchloading = false;
           if(data.code == 0){
             that.agent_name = that.agentInput
-            that.agentCompanyResult = null
             that.agentManResult = data.data
           }else{
             that.$alert('未查询到相关结果', '', {
@@ -171,7 +170,7 @@ export default {
             showClose: false
           })
         })
-      } else if(that.agentSelect ==2){//代理机构搜索
+      } else if(that.agent_nav_active_name == 'second'){//代理机构搜索
         that.agentSearchloading = true;
         Ajax(Config.AgentUrl + '/agent_company',{
           name: that.agentInput
@@ -241,10 +240,16 @@ export default {
     padding: 30px;
     text-align: center;
   }
+  .el-tabs__item{
+    font-size: 0.17rem !important;
+    font-weight: 700 !important;
+  }
   .agent_top_title{
     color: #fafafa;
-    font-size: 0.45rem;
-
+    font-size: 0.3rem;
+  }
+  .agent_input_button{
+    margin-top: 0.3rem !important; 
   }
   .agent_search{
     width: 800px;

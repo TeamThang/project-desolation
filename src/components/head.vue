@@ -85,9 +85,9 @@ import Config from "./../lib/config";
         name: '',
         isLogin: false,
         right: {
-          'F': [{name: '代理人机构查询', path: '/agent'},{name:'专利信息查询', path: '/patent'},{name:'知识产权案件',path:'/case'},{name:'知识产权保险',path:'/insurance'}],
-          'P': [{name:'专利信息查询', path: '/patent'},{name:'代理人机构查询',path:'/agent'},{name:'律所信息查询',path:'lawoffice'},{name:'知识产权保险',path:'/insurance'},{name:'律师推荐',path:'/lawyer'}],
-          'B': [{name:'代理人机构查询',path: '/agent'},{name:'诉前服务',path:'/litigation'},{name:'律师推荐',path:'/lawyer'}]
+          'F': [{name: '代理信息查询', path: '/agent'},{name:'专利信息查询', path: '/patent'},{name:'知识产权案件',path:'/case'},{name:'知识产权保险',path:'/insurance'}],
+          'P': [{name:'专利信息查询', path: '/patent'},{name:'代理信息查询',path:'/agent'},{name:'律所信息查询',path:'lawoffice'},{name:'知识产权保险',path:'/insurance'},{name:'律师推荐',path:'/lawyer'}],
+          'B': [{name:'代理信息查询',path: '/agent'},{name:'诉前服务',path:'/litigation'},{name:'律师推荐',path:'/lawyer'}]
         },
         headItem: []
       }
@@ -136,14 +136,14 @@ import Config from "./../lib/config";
   }
   .head-el-row{
     min-width: 980px;
-    background: #00a1d7;
+    background: rgb(29, 72, 114);
   }
   .head-el-row .el-col{
     height: 60px;
   }
   .head-item{
     height: 60px;
-    background: #00a1d7;
+    background: rgb(29, 72, 114);
     text-align: center;
     line-height: 60px;
     cursor: pointer;
@@ -163,7 +163,7 @@ import Config from "./../lib/config";
     font-weight: 700;
     color: #ffffff;
     height: 60px;
-    background: #00a1d7;
+    background: rgb(29, 72, 114);
   }
   .el-row {
     margin-bottom: 0.2rem;
@@ -174,7 +174,7 @@ import Config from "./../lib/config";
   .el-col {
   }
   .bg-purple-dark {
-    background: #00a1d7;
+    background: rgb(29, 72, 114);
   }
   .grid-content {
     min-height: 60px;

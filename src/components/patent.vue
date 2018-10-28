@@ -3,13 +3,17 @@
   	<Head></Head>
     <router-view></router-view>
     <div class="patent_wrap">
+      <el-tabs v-model="patent_nav_active_name" @tab-click="handleClick">
+        <el-tab-pane class="patent_nav_title" label="专利信息查询" name="first"></el-tab-pane>
+        <el-tab-pane class="patent_nav_title" label="专利涉诉查询" name="second"></el-tab-pane>
+      </el-tabs>
       <div class="patent_content">
         <div class="patent_top" v-loading="patentSearchloading">
-          <p class="patent_top_title">专利查询</p>
+          <p class="patent_top_title" v-show="patent_nav_active_name=='first'">专利信息查询</p>
+          <p class="patent_top_title" v-show="patent_nav_active_name=='second'">专利涉诉查询</p>
           <div class="patent_search">
-              <el-input placeholder="请输入专利号,以ZL/CN开头" v-model="patentInput" class="input-with-select">
-                <el-button slot="append" icon="el-icon-search" @click="patentSearchFunc()"></el-button>
-              </el-input>
+              <el-input placeholder="请输入专利号,以ZL/CN开头, 例如CN201410061036.0" v-model="patentInput" class="input-with-select"></el-input>
+              <el-button class="patent_input_button" icon="el-icon-search" @click="patentSearchFunc()"></el-button>
           </div>
         </div>
         
@@ -34,6 +38,15 @@
             </div>
           </li>
         </ul>
+
+        <ul class="patent_result" v-show="shesuResult!==null">
+          <li class="patent_result_li" v-for="(item, index) in shesuResult">
+            <div class="patent_item">
+              <div class="patent_spec"><span>分类号：</span>{{item.ipc}}</div>
+              <div class="patent_spec"><span>文书ID：</span><a @click="openUrl('http://wenshu.court.gov.cn/content/content?DocID=' + item.wenshu_id)">{{item.wenshu_id}}</a></div>
+            </div>
+          </li>
+        </ul>
         </div>
       </div>
     </div>
@@ -50,6 +63,7 @@ export default {
   },
   data () {
     return {
+      patent_nav_active_name:'first',
       patentInput: '',
       patentSearchloading: false,
       patentResult: null,
@@ -57,37 +71,59 @@ export default {
       tableData: [],
       patentType: [],
       allType: [],
-      activeName: '1'
+      activeName: '1',
+      shesuResult: null
     }
   },
   methods: {
+    openUrl(url){
+      window.open(url)
+    },
+    handleClick(){
+      this.patentResult = null;
+      this.shesuResult = null;
+    },
     patentSearchFunc(){
       var that = this;
-      console.log('select',that.patentTypeSelect)
+      console.log('patentInput',that.patentInput)
       if(!that.patentInput){
         that.$alert('请输入专利号', '', {
           confirmButtonText: '确定',
           showClose: false
         })
-      } else {  //专利类型搜索
-        that.patentSearchloading = true;
-        if(that.patentInput.search('ZL') === -1 || that.patentInput.search('ZL') === -1){
-          that.$alert('请输入正确的专利号', '', {
+      } else if(that.patentInput.search('CN') === -1 && that.patentInput.search('ZL') === -1){
+        that.$alert('请输入正确的专利号', '', {
             confirmButtonText: '确定',
             showClose: false
           })
-        }
-        // var p = that.patentInput.replace('ZL', 'CN')
-        // if(p.search('.') === -1){
-        //   p=p.substring(0,p.length-1) + '.' + p.charAt(p.length - 1)
-        // }
+      } else if(that.patent_nav_active_name == 'first') {  //专利类型搜索
+        that.patentSearchloading = true;
         Ajax(Config.PatentUrl + '/patent_info',{
-          classify_no: that.patentTypeSelect,
           patent_no: that.patentInput
         },function(data){
           that.patentSearchloading = false;
           if(data.code == 0 && data.data.length !== 0){
             that.patentResult = data.data
+          }else{
+            that.$alert('未查询到相关结果', '', {
+              confirmButtonText: '确定',
+              showClose: false
+            })
+          }
+        },function(){
+          that.$alert('查询服务维护中，请稍后再试', '', {
+            confirmButtonText: '确定',
+            showClose: false
+          })
+        })
+      } else if(that.patent_nav_active_name == 'second'){ //涉诉查询
+        that.patentSearchloading = true;
+        Ajax(Config.PatentUrl + '/patent_wenshu',{
+          patent_no: that.patentInput
+        },function(data){
+          that.patentSearchloading = false;
+          if(data.code == 0 && data.data.length !== 0){
+            that.shesuResult = data.data
           }else{
             that.$alert('未查询到相关结果', '', {
               confirmButtonText: '确定',
@@ -182,8 +218,14 @@ export default {
   }
   .patent_top_title{
     color: #fafafa;
-    font-size: 0.45rem;
-
+    font-size: 0.3rem;
+  }
+  .el-tabs__item{
+    font-size: 0.17rem !important;
+    font-weight: 700 !important;
+  }
+  .patent_input_button{
+    margin-top: 0.3rem !important; 
   }
   .patent_search{
     width: 800px;
@@ -255,5 +297,9 @@ export default {
   }
   .patent_wrap .input-with-select{
     width: 500px;
+  }
+  .patent_item .patent_spec a{
+    cursor: pointer;
+    text-decoration: underline;
   }
 </style>
