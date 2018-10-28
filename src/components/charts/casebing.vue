@@ -24,13 +24,20 @@ export default {
   },
   methods: {
     initChart() {
-      console.log(this.$el);
+      var data = this.options;
       var series = []
-      for(var key in this.options) {
-        if(this.options[key] != 0) {
+      for(var key in data) {
+        var reasonname = ''
+        for(var name in data[key]){
+            if(name.search('reason') !== -1){
+                reasonname = data[key][name]
+            }
+        }
+        if(data[key].count != 0) {
+            console.log('reasonname', reasonname, data[key].count)
           series.push({
-            name: key,
-            y: this.options[key]
+            name: reasonname,
+            y: data[key].count
           })
         }
       }
@@ -44,7 +51,7 @@ export default {
           backgroundColor: "#f8f8f8"
         },
         title: {
-          text: '案件分布'
+          text: '案由分布'
         },
         tooltip: {
           pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
@@ -75,7 +82,7 @@ export default {
 
 <style>
   .highcharts-container {
-    width: 940px;
+    width: 900px;
     height: 300px;
   }
 </style>

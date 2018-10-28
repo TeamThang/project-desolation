@@ -1,7 +1,7 @@
 <template>
 <el-row class="head-el-row">
   <el-col :span="4"><div class="grid-content bg-purple-dark"></div></el-col>
-  <el-col :span="4">
+  <el-col :span="3">
     <router-link class="head-item" to="/home">
       <div class="head-logo">
         法宝贝
@@ -43,7 +43,7 @@
       </router-link>
     </div>
   </el-col>
-  <el-col :span="2">
+  <el-col :span="3">
     <div class="grid-content bg-purple-dark">
       <el-header style="text-align: right;">
         <el-dropdown>
@@ -189,7 +189,7 @@ import Config from "./../lib/config";
   }
   .el-dropdown-link {
     outline: none;
-    font-size: 0.2rem;
+    font-size: 0.18rem;
   }
   .el-dropdown-menu {
     margin-top: -20px !important;

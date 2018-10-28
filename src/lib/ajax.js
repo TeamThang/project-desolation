@@ -24,7 +24,7 @@ function Ajax(url , data , fnSucceed , fnFail , fnLoading) {
         //if(fnLoading) fnLoading(); 
     } 
     }; 
-    ajax.send(JSON.stringify(data)); 
+    ajax.send(data ? JSON.stringify(data) : ''); 
     if(fnLoading) fnLoading(); 
 }
 // ajax 对象 

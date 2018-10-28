@@ -7,7 +7,7 @@
         <div class="patent_top" v-loading="patentSearchloading">
           <p class="patent_top_title">专利查询</p>
           <div class="patent_search">
-              <el-input placeholder="请输入专利号" v-model="patentInput" class="input-with-select">
+              <el-input placeholder="请输入专利号,以ZL/CN开头" v-model="patentInput" class="input-with-select">
                 <el-button slot="append" icon="el-icon-search" @click="patentSearchFunc()"></el-button>
               </el-input>
           </div>
@@ -71,6 +71,16 @@ export default {
         })
       } else {  //专利类型搜索
         that.patentSearchloading = true;
+        if(that.patentInput.search('ZL') === -1 || that.patentInput.search('ZL') === -1){
+          that.$alert('请输入正确的专利号', '', {
+            confirmButtonText: '确定',
+            showClose: false
+          })
+        }
+        // var p = that.patentInput.replace('ZL', 'CN')
+        // if(p.search('.') === -1){
+        //   p=p.substring(0,p.length-1) + '.' + p.charAt(p.length - 1)
+        // }
         Ajax(Config.PatentUrl + '/patent_info',{
           classify_no: that.patentTypeSelect,
           patent_no: that.patentInput

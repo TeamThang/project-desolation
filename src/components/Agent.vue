@@ -19,7 +19,7 @@
         
         <ul class="agent_result">
           <el-collapse v-model="activeName" accordion v-show="agentSelect==1">
-          <li class="agent_result_li" v-for="(item, index) in agentManResult">
+          <li class="agent_result_li" v-for="(item, index) in agentManResult" :key="index">
             <div class="agent_item" >
               <div class="agent_avatar" v-bind:class="{ female: item.gender == '女' }"></div>
               <div class="agent_left">
@@ -29,25 +29,32 @@
               <div class="agent_right">
                 <div class="agent_spec">性别{{item.gender}}</div>
                 <div class="agent_spec">专业：{{item.major}}</div>
-                <div class="agent_spec">律师事务所：{{item.cp_name}}</div>
+                <div class="agent_spec">律师事务所：<a @click="changeToCompany(item.cp_name)">{{item.cp_name}}</a></div>
               </div>
             </div>
             <el-collapse-item title="详细信息" :name=index @click="LoadingAgentChart(this, index)">
-                <div class="agent_patent_count">案件数量：{{item.patent_data.count}}</div>
-                <div class="agent_patent_count">案件分布:</div>
-                <ul class="agent_patent_ul">
-                  <li class="agent_patent_li" v-for="(value, key) in item.patent_data.statistic_info.total">
-                      <div>{{key}}：{{value}}</div>
-                  </li>
-                </ul>
-                <div class="agent_charts">
-                  <Bing :info=item.patent_data.statistic_info.total></Bing>
+                <div class="agent_patent_count">专利数量：{{item.patent_data.count}}</div>
+                <div class="agent_patent_count">专利分布:
+                  <span v-if="item.patent_data.count==0 || !item.patent_data.statistic_info">暂无数据</span>
+                </div>
+                <div class="agent_charts" v-if="item.patent_data.count!=0 && item.patent_data.statistic_info">
+                  <Bing :options='item.patent_data.statistic_info.total || []'></Bing>
+                  <div class="agent_patent_count">专利列表:</div>
+                  <ul class="agent_patent_caseul">
+                    <li class="agent_patent_caseli" v-for="(caseitem, caseindex) in agentDetaillist[0]" :key='caseindex'>
+                        <div class="agent_patent_caseli_title">{{caseitem.dev_name}}</div>
+                        <div class="agent_patent_caseli_cont"><span>专利号：</span>{{caseitem.patent_no}}</div>
+                        <div class="agent_patent_caseli_cont"><span>布日期：</span>{{caseitem.public_date}}</div>
+                        <div class="agent_patent_caseli_cont"><span>专利类型：</span>{{caseitem.dev_name}}</div>
+                        <div class="agent_patent_caseli_cont"><span>摘要：</span>{{caseitem.abstract}}</div>
+                    </li>
+                  </ul>
                 </div>
             </el-collapse-item>
           </li>
           </el-collapse>
 
-          <el-collapse v-model="activeCompany" accordion v-if="agentSelect==2 && agentCompanyResult">
+          <el-collapse  accordion v-if="agentSelect==2 && agentCompanyResult != null">
             <div class="agent_company_item">
               <div class="agent_company_name">{{agentCompanyResult.name}}<span>所长: {{agentCompanyResult.leader}}</span> </div>
               <div class="agent_company_address">地址：{{agentCompanyResult.address}}</div>
@@ -65,11 +72,11 @@
               </div>
               <el-collapse-item title="人员详细信息" :name="1">
                   <ul class="agent_result">
-                    <li class="agent_result_li" v-for="(a, i) in agentCompanyResult.agents">
+                    <li class="agent_result_li" v-for="(a, i) in agentCompanyResult.agents" :key="i">
                       <div class="agent_item" >
                         <div class="agent_avatar" v-bind:class="{ female: a.gender == '女' }"></div>
                         <div class="agent_left">
-                          <div class="agent_name">{{a.cp_name}}</div>
+                          <div class="agent_name"><a @click="changeToAgent(a.cp_name)">{{a.cp_name}}</a></div>
                           <div class="agent_spec">证书号：{{a.certNo}}</div>
                         </div>
                         <div class="agent_right">
@@ -86,7 +93,6 @@
         </ul>
         </div>
       </div>
-    </div>
   </div>
 </template>
 
@@ -111,13 +117,27 @@ export default {
       agent_name: '',
       activeName: '1',
       activeCompany: '1',
-      agentDetail:[]
+      agentDetail:[],
+      agentDetaillist: []
     }
   },
   methods: {
+    changeToAgent(name){
+      this.agentInput = name;
+      this.agentSelect = 1
+      console.log('agentSelect', this.agentSelect)
+      console.log('agentSelect.value', this.agentSelect.value)
+      this.agentSearchFunc(1)
+    },
+    changeToCompany(name){
+      this.agentInput = name;
+      this.agentSelect = 2
+      this.agentSearchFunc(2)
+    },
     agentSearchFunc(){
       var that = this;
-      console.log('select',that.agentSelect)
+      that.agentManResult = []
+      that.agentCompanyResult = []
       if(!that.agentSelect){
         that.$alert('请选择类型', '', {
          confirmButtonText: '确定',
@@ -144,7 +164,6 @@ export default {
               showClose: false
             })
           }
-          console.log('data',data)
         },function(){
           that.agentSearchloading = false;
           that.$alert('查询服务维护中，请稍后再试', '', {
@@ -152,7 +171,7 @@ export default {
             showClose: false
           })
         })
-      } else {//代理机构搜索
+      } else if(that.agentSelect ==2){//代理机构搜索
         that.agentSearchloading = true;
         Ajax(Config.AgentUrl + '/agent_company',{
           name: that.agentInput
@@ -160,7 +179,6 @@ export default {
           that.agentSearchloading = false;
           if(data.code == 0){
             that.agent_name = that.agentInput
-            that.agentManResult = []
             that.agentCompanyResult = data.data
           }else{
             that.$alert('未查询到相关结果', '', {
@@ -168,7 +186,6 @@ export default {
               showClose: false
             })
           }
-          console.log('data',data)
         },function(){
           that.agentSearchloading = false;
           that.$alert('查询服务维护中，请稍后再试', '', {
@@ -183,13 +200,15 @@ export default {
     activeName(val){
       var that = this;
       if(val !== '' && !that.agentDetail[val]){
+        that.agentDetaillist = []
         Ajax(Config.AgentUrl + '/patent_by_agname',{
           name: that.agent_name,
           agency: that.agentManResult[val].cp_name
         },function(data){
           if(data.code == 0){
-            that.agentDetail[val] = data.data
-            console.log(that.activeName, data)
+            that.agentDetail[val] = data.data ?  data.data.data : []
+            that.agentDetaillist.push(that.agentDetail[val])
+            console.log('agentDetail', that.agentDetaillist)
           }
         },function(){})
       }
@@ -282,9 +301,17 @@ export default {
     padding: 20px 0;
     height: 84px;
   }
+  .agent_item .agent_name a{
+    cursor: pointer;
+    text-decoration: underline;
+  }
   .agent_item .agent_spec{
     padding: 10px 0;
     height: 42px;
+  }
+  .agent_item .agent_spec a{
+    cursor: pointer;
+    text-decoration: underline;
   }
   .el-collapse{
     border-top: none;
@@ -292,6 +319,8 @@ export default {
   }
   .agent_result_li .el-collapse-item__header{
     height: 150px;
+    width: 150px;
+    float: right;
     margin-top: -150px;
     font-size: 0.15rem;
     line-height: 150px;
@@ -324,11 +353,35 @@ export default {
     font-size: 0.15rem;
   }
   .agent_result_li .agent_charts{
-    width: 500px;
-    height: 600px;
+    width: 940px;
+  }
+  .agent_result_li  .agent_patent_caseul{
+    width: 940px;
+    height: 400px;
+    overflow-y: auto;
+  }
+  .agent_result_li .agent_patent_caseli{
+    list-style: none;
+    width: 850px;
+    padding: 10px;
+    border: 1px solid #e1e2e5;
+    margin-bottom: 10px;
+    -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.14);
+    box-shadow: 0 1px 2px rgba(0,0,0,.14);
+  }
+  .agent_result_li .agent_patent_caseli span{
+    color:#00a1d7;
+  }
+  .agent_result_li .agent_patent_caseli .agent_patent_caseli_title{
+    text-align: center;
+    font-size: 0.16rem;
+    font-weight: 700;
   }
   .agent_patent_count{
     font-size: 0.18rem;
+  }
+  .agent_patent_count span{
+    font-size: 0.16rem;
   }
   .agent_company_item{
     width: 980px;
