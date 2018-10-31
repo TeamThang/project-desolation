@@ -1,5 +1,10 @@
 <template>
-  <div class="highcharts-container"></div>
+  <div>
+    <div id="highchartsContainer"></div>
+    <div v-for="items in zhu" :key="items">
+      <!-- <Zhu :options='items'></Zhu>  -->
+    </div>
+  </div>
 </template>
 
 <script>
@@ -16,7 +21,8 @@ export default {
   name: 'highcharts',
   data() {
     return {
-      chart: null
+      chart: null,
+      zhu: []
     }
   },
   mounted() {
@@ -24,18 +30,21 @@ export default {
   },
   methods: {
     initChart() {
-      console.log(this.$el);
       var series = []
-      for(var key in this.options) {
-        if(this.options[key] != 0) {
+      for(var key in this.options.total) {
+        if(this.options.total[key] != 0) {
           series.push({
             name: key,
-            y: this.options[key]
+            y: this.options.total[key]
+          })
+          this.zhu.push({
+            name: key,
+            data: this.options[key]
           })
         }
       }
-      console.log('series', series)
-      this.chart = new Highcharts.Chart(this.$el, {
+      console.log('zhu',this.zhu)
+      this.chart = new Highcharts.Chart('highchartsContainer', {
         chart: {
           plotBackgroundColor: null,
           plotBorderWidth: null,

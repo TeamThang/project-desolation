@@ -38,7 +38,7 @@
                   <span v-if="item.patent_data.count==0 || !item.patent_data.statistic_info">暂无数据</span>
                 </div>
                 <div class="agent_charts" v-if="item.patent_data.count!=0 && item.patent_data.statistic_info">
-                  <Bing :options='item.patent_data.statistic_info.total || []'></Bing>
+                  <Bing :options='item.patent_data.statistic_info || []'></Bing>
                   <div class="agent_patent_count">专利列表:</div>
                   <ul class="agent_patent_caseul">
                     <li class="agent_patent_caseli" v-for="(caseitem, caseindex) in agentDetaillist[0]" :key='caseindex'>

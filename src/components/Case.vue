@@ -4,23 +4,26 @@
   <router-view></router-view>
   <div class="case_wrap">
     <el-tabs v-model="case_nav_active_name" @tab-click="handleClick">
-      <el-tab-pane class="case_nav_title" label="案件推荐" name="first"></el-tab-pane>
+      <el-tab-pane class="case_nav_title" label="律师查询" name="first"></el-tab-pane>
       <el-tab-pane class="case_nav_title" label="律师推荐" name="second"></el-tab-pane>
-      <el-tab-pane class="case_nav_title" label="案件查询" name="third"></el-tab-pane>
+      <el-tab-pane class="case_nav_title" label="案件推荐" name="third"></el-tab-pane>
     </el-tabs>
       <div class="case_content">
         <div class="case_top" v-loading="caseSearchloading">
-          <p class="case_top_title" v-show="case_nav_active_name=='first'">案件推荐</p>
+          <p class="case_top_title" v-show="case_nav_active_name=='first'">律师查询</p>
           <p class="case_top_title" v-show="case_nav_active_name=='second'">律师推荐</p>
-          <p class="case_top_title" v-show="case_nav_active_name=='third'">案件查询</p>
+          <p class="case_top_title" v-show="case_nav_active_name=='third'">案件推荐</p>
           <div class="case_search">
+            <el-tooltip class="item" effect="dark" content="输入超过内容超过30字" placement="top-start">
+              <i class="el-icon-question"></i>
+            </el-tooltip>
             <el-input  placeholder="请输入案情" v-model="caseInput" class="input-with-select"  type="textarea" :rows="3">
             </el-input>
           </div>
           <el-button class="case_input_button" icon="el-icon-search" @click="caseSearchFunc()">立即搜索</el-button>
         </div>
 
-        <ul class="case_result" v-if="result!=null" v-show="case_nav_active_name == 'first'">
+        <ul class="case_result" v-if="result!=null" v-show="case_nav_active_name == 'third'">
           <li class="case_result_li" v-for="(item, index) in result" :key="index">
             <div class="case_item" >
               <div class="case_title">{{item.title}}<span>{{item.case_num}}</span></div>
@@ -154,7 +157,7 @@ export default {
       var that = this;
       that.caseSearchloading = true;
       that.lawyerDetailList = [];
-      if(that.case_nav_active_name == 'first'){//案件推荐
+      if(that.case_nav_active_name == 'third'){//案件推荐
         var reason = {
           reason_2: "知识产权与竞争纠纷"
         }
