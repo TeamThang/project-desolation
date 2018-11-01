@@ -14,20 +14,30 @@
           <p class="case_top_title" v-show="case_nav_active_name=='second'">律师推荐</p>
           <p class="case_top_title" v-show="case_nav_active_name=='third'">案件推荐</p>
           <div class="case_search">
-            <el-tooltip class="item" effect="dark" content="输入超过内容超过30字" placement="top-start">
+            <!-- <el-tooltip class="item" effect="dark" content="输入超过内容超过30字" placement="top-start">
               <i class="el-icon-question"></i>
-            </el-tooltip>
-            <el-input  placeholder="请输入案情" v-model="caseInput" class="input-with-select"  type="textarea" :rows="3">
+            </el-tooltip> -->
+            <el-input  :placeholder="case_nav_active_name=='first' ? '请输入律师姓名': '请输入案情，输入超过内容超过30字'" v-model="caseInput" class="input-with-select"  type="textarea" :rows="3">
             </el-input>
           </div>
+          <div class="case_input_select">
+            <div class="case_input_demonstration" v-show="case_nav_active_name=='second'">
+              <span >选择地址：</span>
+              <el-cascader
+                :options="location"
+                v-model="locationOptions"
+                @change="handleLocation">
+              </el-cascader>
+            </div>
           <el-button class="case_input_button" icon="el-icon-search" @click="caseSearchFunc()">立即搜索</el-button>
+          </div>
         </div>
 
         <ul class="case_result" v-if="result!=null" v-show="case_nav_active_name == 'third'">
           <li class="case_result_li" v-for="(item, index) in result" :key="index">
             <div class="case_item" >
               <div class="case_title">{{item.title}}<span>{{item.case_num}}</span></div>
-              <div class="case_left">
+              <div :class="case_nav_active_name=='second' ? 'case_all' : 'case_left'">
                 <div class="case_cont">受理法院：{{item.court}}</div>
                 <div class="case_cont">判决时间：{{item.judgement_date}}</div>
                 <div class="case_cont">审理阶段：{{item.judicial_procedure}}</div>
@@ -51,7 +61,7 @@
                   <div class="case_cont">案件数量:{{item.num}}</div>
                 </div>
               </div>
-              <el-collapse-item title="详细信息" :name=index >
+              <el-collapse-item title="点击查看详细信息" :name=index >
                 <div class="lawyer_detail_case_count">
                   <ul class="lawyer_detail_ul" v-if="lawyerDetailList[index]">
                     <div class="lawyer_detail_cont"><span>性别：</span>{{lawyerDetailList[index].gender}}</div>
@@ -119,6 +129,7 @@ import CaseBing from '@/components/charts/casebing';
 import Config from './../lib/config';
 import Ajax from './../lib/ajax';
 import config from './../lib/config';
+import Loc from './../lib/loc';
 export default {
   name: "Case",
   components:{
@@ -140,10 +151,15 @@ export default {
         reason5_input:'',
         formLabelWidth: '180px',
         reasondata: {},
-        lawyerDetailList: []
+        lawyerDetailList: [],
+        location: Loc.location,
+        locationOptions: [],
     };
   },
   methods: {
+    handleLocation(value){
+      console.log('handleLocation', value)
+    },
     handleClick(tab, event){
       this.result = null;
       this.lawyerDetailList = [];
@@ -207,13 +223,22 @@ export default {
             reason.reason_4 = that.reason4_input
           }else if(that.reason3_input){
             reason.reason_3 = that.reason3_input
+          }else{
+            reason['reason_2'] = '知识产权与竞争纠纷'
           }
         }
-        Ajax(Config.AjaxUrl + '/query/lawyer/lawyer_list',{
+        var postData = {
           'reason': reason,
           'page_count': 20,
           'page_num': 1 
-        },function(result){
+        }
+        if(that.locationOptions[0]){
+          postData.province = that.locationOptions[0]
+        }
+        if(that.locationOptions[1]){
+          postData.city = that.locationOptions[1]
+        }
+        Ajax(Config.AjaxUrl + '/query/lawyer/lawyer_list',postData,function(result){
           that.caseSearchloading = false;
           if(result.code == 0){
             that.result = result.data
@@ -360,6 +385,12 @@ export default {
     color: #fafafa;
     font-size: 0.3rem;
   }
+  .case_input_demonstration{
+    display: inline-block;
+    color: white;
+    font-size: 0.16rem;
+    margin-right:50px; 
+  }
   .case_input_button{
     margin-top: 0.3rem !important; 
   }
@@ -404,6 +435,13 @@ export default {
     padding: 0 30px 0 0;
     font-size: 0.15rem;
   }
+  .case_result_li .case_all{
+    float: left;
+    height: 148px;
+    width: 800px;
+    padding: 0 30px 0 0;
+    font-size: 0.15rem;
+  }
   .case_result_li .case_cont{
     font-size: 0.15rem;
     margin: 10px 0;
@@ -426,6 +464,7 @@ export default {
     line-height: 170px;
     position: relative;
     background: transparent;
+    color:#00a1d7;
   }
   .case_result_li .el-collapse-item__header .el-collapse-item__arrow{
     line-height: 170px;

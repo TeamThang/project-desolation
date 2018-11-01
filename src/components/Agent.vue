@@ -29,7 +29,7 @@
               <div class="agent_right">
                 <div class="agent_spec">性别{{item.gender}}</div>
                 <div class="agent_spec">专业：{{item.major}}</div>
-                <div class="agent_spec">律师事务所：<a @click="changeToCompany(item.cp_name)">{{item.cp_name}}</a></div>
+                <div class="agent_spec">专利机构：<a @click="changeToCompany(item.cp_name)">{{item.cp_name}}</a></div>
               </div>
             </div>
             <el-collapse-item title="详细信息" :name=index @click="LoadingAgentChart(this, index)">
@@ -65,7 +65,7 @@
                   <div class="agent_spec">电话：{{agentCompanyResult.phone}}</div>
                 </div>
                 <div class="agent_company_right">
-                  <div class="agent_spec">律师数量：{{agentCompanyResult.agentNum}}</div>
+                  <div class="agent_spec">专利代理人人数：{{agentCompanyResult.agentNum}}</div>
                   <div class="agent_spec">成立时间：{{agentCompanyResult.stablish}}</div>
                   <div class="agent_spec">网址：{{agentCompanyResult.website}}</div>
                 </div>

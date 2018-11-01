@@ -42,8 +42,25 @@
         <ul class="patent_result" v-show="shesuResult!==null">
           <li class="patent_result_li" v-for="(item, index) in shesuResult">
             <div class="patent_item">
-              <div class="patent_spec"><span>分类号：</span>{{item.ipc}}</div>
+              <!-- <div class="patent_spec"><span>分类号：</span>{{item.ipc}}</div>
               <div class="patent_spec"><span>文书ID：</span><a @click="openUrl('http://wenshu.court.gov.cn/content/content?DocID=' + item.wenshu_id)">{{item.wenshu_id}}</a></div>
+              <div class="patent_spec"><span>涉诉案件概况：</span></div>   -->
+              <div v-if="shesuanjian[0] && shesuanjian[0][item.wenshu_id]">
+                 <div class="case_title">{{shesuanjian[0][item.wenshu_id].title}}<span>{{shesuanjian[0][item.wenshu_id].case_num}}</span></div>
+                 <div class="case_spec"><span>受理法院：</span>{{shesuanjian[0][item.wenshu_id].court}}</div>
+                 <div class="case_spec"><span>受理阶段：</span>{{shesuanjian[0][item.wenshu_id].judicial_procedure2?shesuanjian[0][item.wenshu_id].judicial_procedure2:shesuanjian[0][item.wenshu_id].judicial_procedure1}}</div>
+                 <div class="case_spec"><span>审理时间：</span>{{shesuanjian[0][item.wenshu_id].judgement_date}}</div>
+                 <div class="case_spec"><span>审理状态：</span>{{shesuanjian[0][item.wenshu_id].judge_type}}</div>
+                 <div class="case_spec"><span>代理人：</span>{{shesuanjian[0][item.wenshu_id].party_info}}</div>
+                 <div class="case_spec"><span>审判员：</span>{{shesuanjian[0][item.wenshu_id].judge_person}}</div>
+                 <div class="case_spec"><span>案情简介：</span>{{shesuanjian[0][item.wenshu_id].trail_flow}}</div>
+                 <div class="case_spec"><span>原告观点：</span>{{shesuanjian[0][item.wenshu_id].plaintiff_point}}</div>
+                 <div class="case_spec"><span>被告观点：</span>{{shesuanjian[0][item.wenshu_id].defendant_point}}</div>
+                 <div class="case_spec"><span>法院核实：</span>{{shesuanjian[0][item.wenshu_id].court_verification}}</div>
+                 <div class="case_spec"><span>法院观点：</span>{{shesuanjian[0][item.wenshu_id].court_point}}</div>
+                 <div class="case_spec"><span>审判结果：</span>{{shesuanjian[0][item.wenshu_id].judge_result}}</div>
+              </div>
+              <div v-else>正在加载中。。。</div>
             </div>
           </li>
         </ul>
@@ -72,7 +89,8 @@ export default {
       patentType: [],
       allType: [],
       activeName: '1',
-      shesuResult: null
+      shesuResult: null,
+      shesuanjian:[]
     }
   },
   methods: {
@@ -85,7 +103,6 @@ export default {
     },
     patentSearchFunc(){
       var that = this;
-      console.log('patentInput',that.patentInput)
       if(!that.patentInput){
         that.$alert('请输入专利号', '', {
           confirmButtonText: '确定',
@@ -185,9 +202,31 @@ export default {
         }
         that.patentType = type
       }
-      console.log('data',type)
     },function(){
     })
+  },
+  watch: {
+    shesuResult(val){
+      var that = this;
+      var rspdata = {};
+      if(val && val.length > 0){
+        for(var i in val){
+          Ajax(Config.AjaxUrl + '/query/case/case_doc',{
+            'reason': {
+               'reason_2': '知识产权与竞争纠纷'
+            },
+            'wenshu_id': val[i].wenshu_id
+          },function(data){
+            if(data.code == 0){
+              console.log('wenshu_id', data.data.wenshu_id)
+              rspdata[data.data.wenshu_id] = data.data
+              that.shesuanjian.push(rspdata)
+            }
+          },function(){
+          })
+        }
+      }
+    }
   }
 }
 </script>
@@ -276,6 +315,28 @@ export default {
     font-size: 0.16rem;
     text-indent: 2em;
     line-height: 35px;
+  }
+  .patent_item .case_title{
+    font-size: 0.2rem;
+    font-weight: 700;
+    text-align: center;
+    margin: 10px 0;
+  }
+  .patent_item .case_title span{
+    font-size: 0.16rem;
+    font-weight: 400;
+    color:#00a1d7;
+    padding: 0 0 0 10px;
+  }
+  .patent_item .case_spec{
+    padding: 10px 0;
+    font-size: 0.16rem;
+  }
+  .patent_item .case_spec span{
+    color:#00a1d7;
+    padding: 10px 0;
+    height: 42px;
+    font-size: 0.16rem;
   }
   .patent_company_item{
     width: 980px;

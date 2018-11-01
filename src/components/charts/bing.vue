@@ -1,8 +1,10 @@
 <template>
   <div>
     <div id="highchartsContainer"></div>
-    <div v-for="items in zhu" :key="items">
-      <!-- <Zhu :options='items'></Zhu>  -->
+    <div v-if="zhu.length > 0">
+      <div v-for="items in zhu">
+        <Zhu :options='items'></Zhu>
+      </div>
     </div>
   </div>
 </template>
@@ -12,6 +14,7 @@ import Highcharts from 'highcharts/highstock';
 import HighchartsMore from 'highcharts/highcharts-more';
 import HighchartsDrilldown from 'highcharts/modules/drilldown';
 import Highcharts3D from 'highcharts/highcharts-3d';
+import Zhu from '@/components/charts/zhu';
 HighchartsMore(Highcharts)
 HighchartsDrilldown(Highcharts);
 Highcharts3D(Highcharts);
@@ -19,6 +22,9 @@ Highcharts3D(Highcharts);
 export default {
   props: ['options', 'styles'],
   name: 'highcharts',
+  components:{
+    Zhu: Zhu
+  },
   data() {
     return {
       chart: null,
@@ -31,19 +37,36 @@ export default {
   methods: {
     initChart() {
       var series = []
+      var zhuData = []
       for(var key in this.options.total) {
         if(this.options.total[key] != 0) {
           series.push({
             name: key,
             y: this.options.total[key]
           })
+          /* 
+          授权阶段_信息变更:0
+          授权阶段_失效:0
+          授权阶段_授权:70
+          授权阶段_无效:0
+          授权阶段_许可:0
+          申请阶段_在审:0
+          申请阶段_撤回:0
+          申请阶段_驳回:0 */
           this.zhu.push({
             name: key,
-            data: this.options[key]
+            data: [
+              ['授权阶段_信息变更',this.options[key]['授权阶段_信息变更']],
+              ['授权阶段_失效',this.options[key]['授权阶段_失效']],
+              ['授权阶段_授权',this.options[key]['授权阶段_授权']],
+              ['授权阶段_无效',this.options[key]['授权阶段_无效']],
+              ['授权阶段_许可',this.options[key]['授权阶段_许可']],
+              ['申请阶段_在审',this.options[key]['申请阶段_在审']],
+              ['申请阶段_撤回',this.options[key]['申请阶段_撤回']],
+              ['申请阶段_驳回',this.options[key]['申请阶段_驳回']]]
           })
         }
       }
-      console.log('zhu',this.zhu)
       this.chart = new Highcharts.Chart('highchartsContainer', {
         chart: {
           plotBackgroundColor: null,
@@ -86,5 +109,8 @@ export default {
   .highcharts-container {
     width: 940px;
     height: 300px;
+  }
+  .highcharts-credits{
+    display: none;
   }
 </style>
