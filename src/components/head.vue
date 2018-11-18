@@ -1,42 +1,41 @@
 <template>
-<el-row class="head-el-row">
-  <el-col :span="4"><div class="grid-content bg-purple-dark"></div></el-col>
+<el-row class="head-el-row" type="flex" justify="center">
   <el-col :span="3">
-    <router-link class="head-item" to="/home">
-      <div class="head-logo">
+    <div class="head-item">
+      <router-link class="head-logo" to="/home">
         法宝贝
-      </div>
-    </router-link>
+      </router-link>
+    </div>
   </el-col>
-  <el-col :span="2">
+  <el-col :span="3">
     <div class="head-item" v-if="headItem[0]">
       <router-link  class="head-link" :to="headItem[0] ? headItem[0].path : '/home'">
         {{headItem[0] ? headItem[0].name : ''}}
       </router-link>
     </div>
   </el-col>
-  <el-col :span="2">
+  <el-col :span="3">
     <div class="head-item" v-show="headItem[1]">
       <router-link  class="head-link" :to="headItem[1] ? headItem[1].path : '/home'">
         {{headItem[1] ? headItem[1].name : ''}}
       </router-link>
     </div>
   </el-col>
-  <el-col :span="2">
+  <el-col :span="3">
     <div class="head-item" v-show="headItem[2]">
       <router-link  class="head-link" :to="headItem[2] ? headItem[2].path : '/home'">
         {{headItem[2] ? headItem[2].name : ''}}
       </router-link>
     </div>
   </el-col>
-  <el-col :span="2">
+  <el-col :span="3">
     <div class="head-item" v-show="headItem[3]">
       <router-link  class="head-link" :to="headItem[3] ? headItem[3].path : '/home'">
         {{headItem[3] ? headItem[3].name : ''}}
       </router-link>
     </div>
   </el-col>
-  <el-col :span="2">
+  <el-col :span="3">
     <div class="head-item" v-show="headItem[4]">
       <router-link  class="head-link" :to="headItem[4] ? headItem[4].path : '/home'">
         {{headItem[4] ? headItem[4].name : ''}}
@@ -85,7 +84,7 @@ import Config from "./../lib/config";
         name: '',
         isLogin: false,
         right: {
-          'F': [{name:'专利信息查询', path: '/patent'},{name: '专利代理信息查询', path: '/agent'},{name:'诉讼案件查询',path:'/case'},{name:'知识产权保险',path:'/insurance'}],
+          'F': [{name:'专利信息查询', path: '/patent'},{name: '专利代理信息查询', path: '/agent'},{name:'诉讼案件查询',path:'/case'},{name:'知识产权保险',path:'/insurance'},{name:'法规培训',path:'/learning'}],
           'P': [{name:'专利信息查询', path: '/patent'},{name:'代理信息查询',path:'/agent'},{name:'律所信息查询',path:'lawoffice'},{name:'知识产权保险',path:'/insurance'},{name:'律师推荐',path:'/lawyer'}],
           'B': [{name:'代理信息查询',path: '/agent'},{name:'诉前服务',path:'/litigation'},{name:'律师推荐',path:'/lawyer'}]
         },
@@ -135,7 +134,7 @@ import Config from "./../lib/config";
     text-decoration: none;
   }
   .head-el-row{
-    min-width: 980px;
+    min-width: 1080px;
     background: rgb(29, 72, 114);
   }
   .head-el-row .el-col{
@@ -145,24 +144,26 @@ import Config from "./../lib/config";
     height: 60px;
     background: rgb(29, 72, 114);
     text-align: center;
-    line-height: 60px;
     cursor: pointer;
-    font-size: 0.16rem;
+    font-size: 0.15rem;
+    word-wrap:break-word;
+  }
+  .head-item:before{
+    content:"";
+    display:inline-block;
+    height:100%;
+    vertical-align:middle;
   }
   .head-link{
-    display: inline-block;
-    width: 100%;
-    height: 100%;
     color: #ffffff;
+    vertical-align: middle;
   }
   .head-logo{
-    text-align: left;
-    width: 100%;
-    line-height: 0.5rem;
-    font-size: 0.4rem;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 0.3rem;
     font-weight: 700;
     color: #ffffff;
-    height: 60px;
     background: rgb(29, 72, 114);
   }
   .el-row {
@@ -189,7 +190,8 @@ import Config from "./../lib/config";
   }
   .el-dropdown-link {
     outline: none;
-    font-size: 0.18rem;
+    font-size: 0.16rem;
+    cursor: pointer;
   }
   .el-dropdown-menu {
     margin-top: -20px !important;

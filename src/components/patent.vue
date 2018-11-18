@@ -6,14 +6,18 @@
       <el-tabs v-model="patent_nav_active_name" @tab-click="handleClick">
         <el-tab-pane class="patent_nav_title" label="专利信息查询" name="first"></el-tab-pane>
         <el-tab-pane class="patent_nav_title" label="专利涉诉查询" name="second"></el-tab-pane>
+        <el-tab-pane class="patent_nav_title" label="专利复审信息查询" name="third"></el-tab-pane>
+        <el-tab-pane class="patent_nav_title" label="专利无效宣告查询" name="fourth"></el-tab-pane>
       </el-tabs>
       <div class="patent_content">
         <div class="patent_top" v-loading="patentSearchloading">
           <p class="patent_top_title" v-show="patent_nav_active_name=='first'">专利信息查询</p>
           <p class="patent_top_title" v-show="patent_nav_active_name=='second'">专利涉诉查询</p>
+          <p class="patent_top_title" v-show="patent_nav_active_name=='third'">复审信息查询</p>
+          <p class="patent_top_title" v-show="patent_nav_active_name=='fourth'">无效宣告查询</p>
           <div class="patent_search">
-              <el-input placeholder="请输入专利号,以ZL/CN开头, 例如CN201410061036.0" v-model="patentInput" class="input-with-select"></el-input>
-              <el-button class="patent_input_button" icon="el-icon-search" @click="patentSearchFunc()"></el-button>
+            <el-input placeholder="请输入专利号,以ZL/CN开头, 例如CN201410061036.0" v-model="patentInput" class="input-with-select"></el-input>
+            <el-button type="primary" class="patent_input_button" icon="el-icon-search" @click="patentSearchFunc()"></el-button>
           </div>
         </div>
         
@@ -60,10 +64,41 @@
                  <div class="case_spec"><span>法院观点：</span>{{shesuanjian[0][item.wenshu_id].court_point}}</div>
                  <div class="case_spec"><span>审判结果：</span>{{shesuanjian[0][item.wenshu_id].judge_result}}</div>
               </div>
-              <div v-else>正在加载中。。。</div>
+              <div v-else>全力搜索中，请稍等。</div>
             </div>
           </li>
         </ul>
+
+         <ul class="patent_result" v-if="patentReCheckResult">
+            <div class="patent_item">
+               <div class="case_title">{{patentReCheckResult.dev_name}}</div>
+               <div class="case_spec_left">
+                 <div class="case_spec"><span>决定号：</span>{{patentReCheckResult.decision_id}}</div>
+                 <div class="case_spec"><span>委内编号：</span>{{patentReCheckResult.detail.weinei_no}}</div>
+                 <div class="case_spec"><span>申请（专利）号：</span>{{patentReCheckResult.detail.patent_no}}</div>
+                 <div class="case_spec"><span>复审请求人：</span>{{patentReCheckResult.detail.recheck_apply_person}}</div>
+                 <div class="case_spec"><span>授权公告日：</span>{{patentReCheckResult.detail.auth_public_date}}</div>
+                 <div class="case_spec"><span>专利权人：</span>{{patentReCheckResult.detail.apply_person}}</div>
+                 <div class="case_spec"><span>合议组组长：</span>{{patentReCheckResult.detail.discussion_team_leader}}</div>
+                 <div class="case_spec"><span>国际分类号：</span>{{patentReCheckResult.detail.classify_no}}</div>
+               </div>
+               <div class="case_spec_right">
+                 <div class="case_spec"><span>决定日：</span>{{patentReCheckResult.decision_date}}</div>
+                 <div class="case_spec"><span>优先权日：</span>{{patentReCheckResult.detail.priority_date}}</div>
+                 <div class="case_spec"><span>申请日：</span>{{patentReCheckResult.detail.apply_date }}</div>
+                 <div class="case_spec"><span>无效请求人：</span>{{patentReCheckResult.detail.invalid_apply_person}}</div>
+                 <div class="case_spec"><span>审定公告日：</span>{{patentReCheckResult.detail.check_public_date}}</div>
+                 <div class="case_spec"><span>主审员：</span>{{patentReCheckResult.detail.chief}}</div>
+                 <div class="case_spec"><span>参审员：</span>{{patentReCheckResult.detail.participation}}</div>
+                 <div class="case_spec"><span>外观设计分类号：</span>{{patentReCheckResult.detail.facade_classify_no}}</div>
+               </div>
+               <div class="case_spec"><span>法律依据：</span>{{patentReCheckResult.detail.lawyer_according}}</div>
+               <div class="case_spec"><span>决定要点：</span></div>
+               <div class="case_spec">{{patentReCheckResult.doc ? patentReCheckResult.doc.point : '暂无数据'}}</div>
+               <div class="case_spec"><span>全文：</span></div>
+               <div class="case_spec">{{patentReCheckResult.doc ? patentReCheckResult.doc.full_text : '暂无数据'}}</div>
+            </div>
+         </ul>
         </div>
       </div>
     </div>
@@ -90,7 +125,8 @@ export default {
       allType: [],
       activeName: '1',
       shesuResult: null,
-      shesuanjian:[]
+      shesuanjian:[],
+      patentReCheckResult: null
     }
   },
   methods: {
@@ -100,6 +136,7 @@ export default {
     handleClick(){
       this.patentResult = null;
       this.shesuResult = null;
+      this.patentReCheckResult = null
     },
     patentSearchFunc(){
       var that = this;
@@ -141,6 +178,27 @@ export default {
           that.patentSearchloading = false;
           if(data.code == 0 && data.data.length !== 0){
             that.shesuResult = data.data
+          }else{
+            that.$alert('未查询到相关结果', '', {
+              confirmButtonText: '确定',
+              showClose: false
+            })
+          }
+        },function(){
+          that.$alert('查询服务维护中，请稍后再试', '', {
+            confirmButtonText: '确定',
+            showClose: false
+          })
+        })
+      }else if(that.patent_nav_active_name == 'third' || that.patent_nav_active_name == 'fourth'){ //复审查询
+        that.patentSearchloading = true;
+        Ajax(Config.PatentUrl + '/check_decision',{
+          patent_no: that.patentInput
+        },function(data){
+          that.patentSearchloading = false;
+          if(data.code == 0 && data.data.length !== 0){
+            that.patentReCheckResult = data.data
+            if(!data.data.detail)that.patentReCheckResult.detail = {}
           }else{
             that.$alert('未查询到相关结果', '', {
               confirmButtonText: '确定',
@@ -285,6 +343,11 @@ export default {
     box-shadow: 0 2px 4px rgba(0,0,0,.14);
     padding: 10px 50px;
     border-radius: 3px;
+    -moz-user-select:none; /*火狐*/
+    -webkit-user-select:none; /*webkit浏览器*/
+    -ms-user-select:none; /*IE10*/
+    -khtml-user-select:none; /*早期浏览器*/
+    user-select:none;
   }
   .patent_item .patent_img_wrap{
     width: 100%;
@@ -327,6 +390,14 @@ export default {
     font-weight: 400;
     color:#00a1d7;
     padding: 0 0 0 10px;
+  }
+  .patent_item .case_spec_left{
+    width: 439px;
+    float: left;
+  }
+  .patent_item .case_spec_right{
+    width: 439px;
+    float: left;
   }
   .patent_item .case_spec{
     padding: 10px 0;

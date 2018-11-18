@@ -36,7 +36,24 @@
             </router-link>
           </li>
           <li>
-            <el-button>实名认证</el-button>
+            <router-link :to="{ name: 'baoxianxinxi'}">
+              <el-button>保险信息</el-button>
+            </router-link>
+          </li>
+          <li>
+            <router-link :to="{ name: 'case_manage'}">
+              <el-button>案件管理</el-button>
+            </router-link>
+          </li>
+          <li>
+            <router-link :to="{ name: 'suqianfuwu'}">
+              <el-button>诉前服务</el-button>
+            </router-link>
+          </li>
+          <li>
+            <router-link :to="{ name: 'suzhongfuwu'}">
+              <el-button>诉中服务</el-button>
+            </router-link>
           </li>
           <li>
             <el-button>其他</el-button>

@@ -1,6 +1,7 @@
 export default {
-    "AjaxUrl": "http://47.92.38.167:8888",
-    "AgentUrl": "http://47.92.38.167:8888/query/patent",
-    "PatentUrl": "http://47.92.38.167:8888/query/patent",
-    "CaseUrl": "http://47.92.38.167:8888/feature_query"
+    "AjaxUrl": "http://www.iplegal8.com:8888",
+    "AgentUrl": "http://www.iplegal8.com:8888/query/patent",
+    "PatentUrl": "http://www.iplegal8.com:8888/query/patent",
+    "CaseUrl": "http://www.iplegal8.com:8888/feature_query",
+    "NewAjaxUrl": "http://www.iplegal8.com:8889"
 }

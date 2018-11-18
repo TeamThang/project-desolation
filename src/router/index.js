@@ -16,6 +16,12 @@ import Profile_password from '@/components/profile/password'
 import Profile_avatar from '@/components/profile/avatar'
 import Profile_modifyEmail from '@/components/profile/email'
 import Profile_modifyPhone from '@/components/profile/phone'
+import Case_manage from '@/components/profile/casemanage'
+import Suqianfuwu from '@/components/profile/suqianfuwu'
+import Suzhongfuwu from '@/components/profile/suzhongfuwu'
+import Baoxianxinxi from '@/components/profile/baoxianxinxi'
+import Learning from '@/components/learning'
+
 
 Vue.use(Router)
 
@@ -28,14 +34,7 @@ export default new Router({
     {
       path: '/home',
       name: 'Home',
-      component: Home,
-      children: [
-        {
-          path: '/',
-          name: 'Law',
-          component: Law
-        }
-      ]
+      component: Home
     },
     {
       path: '/agent',
@@ -68,6 +67,11 @@ export default new Router({
       component: Register
     },
     {
+      path: '/learning',
+      name: 'Learning',
+      component: Learning
+    },
+    {
       path: '/profile',
       name: 'Profile',
       component: Profile,
@@ -95,6 +99,22 @@ export default new Router({
       	path: 'password',
         component: Profile_password,
         name: 'profile_password'
+      },{
+      	path: 'casemanage',
+        component: Case_manage,
+        name: 'case_manage'
+      },{
+      	path: 'suqianfuwu',
+        component: Suqianfuwu,
+        name: 'suqianfuwu'
+      },{
+      	path: 'suzhongfuwu',
+        component: Suzhongfuwu,
+        name: 'suzhongfuwu'
+      },{
+      	path: 'baoxianxinxi',
+        component: Baoxianxinxi,
+        name: 'baoxianxinxi'
       }]
     },
     {

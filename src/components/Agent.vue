@@ -13,12 +13,12 @@
           <p class="agent_top_title" v-show="agent_nav_active_name=='second'">代理机构查询</p>
           <div class="agent_search">
             <el-input placeholder="请输入内容" v-model="agentInput" class="input-with-select"></el-input>
-            <el-button class="agent_input_button" icon="el-icon-search" @click="agentSearchFunc()">立即搜索</el-button>
+            <el-button type="primary" class="agent_input_button" icon="el-icon-search" @click="agentSearchFunc()">立即搜索</el-button>
           </div>
         </div>
         
-        <ul class="agent_result">
-          <el-collapse v-model="activeName" accordion v-if="agentManResult!=null" v-show="agent_nav_active_name == 'first'">
+        <ul class="agent_result" v-if="agentManResult!=null" v-show="agent_nav_active_name == 'first'">
+          <el-collapse v-model="activeName" accordion>
           <li class="agent_result_li" v-for="(item, index) in agentManResult" :key="index">
             <div class="agent_item" >
               <div class="agent_avatar" v-bind:class="{ female: item.gender == '女' }"></div>
@@ -27,9 +27,9 @@
                 <div class="agent_spec">证书号：{{item.certNo}}</div>
               </div>
               <div class="agent_right">
-                <div class="agent_spec">性别{{item.gender}}</div>
+                <div class="agent_spec">性别：{{item.gender}}</div>
                 <div class="agent_spec">专业：{{item.major}}</div>
-                <div class="agent_spec">专利机构：<a @click="changeToCompany(item.cp_name)">{{item.cp_name}}</a></div>
+                <div class="agent_spec">专利代理机构：<a @click="changeToCompany(item.cp_name)">{{item.cp_name}}</a></div>
               </div>
             </div>
             <el-collapse-item title="详细信息" :name=index @click="LoadingAgentChart(this, index)">
@@ -53,8 +53,18 @@
             </el-collapse-item>
           </li>
           </el-collapse>
-
-          <el-collapse  accordion v-if="agentCompanyResult!=null" v-show="agent_nav_active_name == 'second'">
+          <div class="agent_result_page">
+            <el-pagination
+              @current-change="handleAgentChange"
+              :current-page.sync="currentPage"
+              :page-size="10"
+              layout="total, prev, pager, next"
+              :total="totalItems">
+            </el-pagination>
+          </div>
+        </ul>
+        <ul  class="agent_result" v-if="agentCompanyResult!=null" v-show="agent_nav_active_name == 'second'">
+          <el-collapse  accordion>
             <div class="agent_company_item">
               <div class="agent_company_name">{{agentCompanyResult.name}}<span>所长: {{agentCompanyResult.leader}}</span> </div>
               <div class="agent_company_address">地址：{{agentCompanyResult.address}}</div>
@@ -90,6 +100,8 @@
               </el-collapse-item>
             </div>
           </el-collapse>
+          <div class="agent_compant_result_page">
+          </div>
         </ul>
         </div>
       </div>
@@ -114,15 +126,27 @@ export default {
       agentSelect: '',
       agentSearchloading: false,
       agentManResult: null,
+      agentTotalManResult: null,
       agentCompanyResult: null,
       agent_name: '',
       activeName: '1',
       activeCompany: '1',
       agentDetail:[],
-      agentDetaillist: []
+      agentDetaillist: [],
+      currentPage: 1,
+      totalItems: 0
     }
   },
   methods: {
+    handleAgentChange(val) {
+      console.log(`当前页: ${val}`);
+      agentManResult
+      this.currentPage = val;
+      this.agentManResult = [];
+      this.agentManResult.push(this.agentTotalManResult.slice(val*10, val*10+10))
+      // this.agentSearchFunc();
+      document.documentElement.scrollTop = document.body.scrollTop = 0;
+    },
     handleClick(){
       this.agentManResult = null;
       this.agentCompanyResult = null;
@@ -155,8 +179,10 @@ export default {
         },function(data){
           that.agentSearchloading = false;
           if(data.code == 0){
-            that.agent_name = that.agentInput
-            that.agentManResult = data.data
+            that.agent_name = that.agentInput;
+            that.agentTotalManResult = data.data;
+            that.agentManResult = data.data.slice(0,10);
+            that.totalItems = data.data.length || 0;
           }else{
             that.$alert('未查询到相关结果', '', {
               confirmButtonText: '确定',
@@ -177,8 +203,8 @@ export default {
         },function(data){
           that.agentSearchloading = false;
           if(data.code == 0){
-            that.agent_name = that.agentInput
-            that.agentCompanyResult = data.data
+            that.agent_name = that.agentInput;
+            that.agentCompanyResult = data.data;
           }else{
             that.$alert('未查询到相关结果', '', {
               confirmButtonText: '确定',
@@ -438,5 +464,8 @@ export default {
   }
   .agent_company_item .el-collapse-item__content{
     padding-bottom: 0;
+  }
+  .agent_result .agent_result_page{
+    text-align: center;
   }
 </style>

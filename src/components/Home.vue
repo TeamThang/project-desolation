@@ -1,7 +1,9 @@
 <template>
-  <div>
+  <div class="main">
   	<Head></Head>
-    <router-view></router-view>
+    <div class="main_wrap">
+
+    </div>
   </div>
 </template>
 
@@ -21,5 +23,15 @@ export default {
 </script>
 
 <style >
-		
+.main{
+  width: 100%;
+  height: 100%;
+}
+.main_wrap{
+  width: 100%;
+  height: 100%;
+  background: url('./../assets/img/bg/main.jpg') center center no-repeat;
+  background-size: cover;
+  margin-top: -0.7rem;
+}
 </style>

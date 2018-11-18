@@ -17,11 +17,11 @@
             <!-- <el-tooltip class="item" effect="dark" content="输入超过内容超过30字" placement="top-start">
               <i class="el-icon-question"></i>
             </el-tooltip> -->
-            <el-input  :placeholder="case_nav_active_name=='first' ? '请输入律师姓名': '请输入案情，输入超过内容超过30字'" v-model="caseInput" class="input-with-select"  type="textarea" :rows="3">
+            <el-input  :placeholder="case_nav_active_name=='first' ? '输入律师姓名': '请输入案情，输入超过内容超过30字'" v-model="caseInput" class="input-with-select"  type="textarea" :rows="3">
             </el-input>
           </div>
           <div class="case_input_select">
-            <div class="case_input_demonstration" v-show="case_nav_active_name=='second'">
+            <div class="case_input_demonstration" v-show="case_nav_active_name=='second' || case_nav_active_name=='third'">
               <span >选择地址：</span>
               <el-cascader
                 :options="location"
@@ -29,14 +29,15 @@
                 @change="handleLocation">
               </el-cascader>
             </div>
-          <el-button class="case_input_button" icon="el-icon-search" @click="caseSearchFunc()">立即搜索</el-button>
+          <el-button class="case_input_button" type="primary" icon="el-icon-search" @click="caseSearchFunc()">立即搜索</el-button>
           </div>
         </div>
 
-        <ul class="case_result" v-if="result!=null" v-show="case_nav_active_name == 'third'">
+        <ul class="case_result" v-if="result!=null&&caseResult==null" v-show="case_nav_active_name == 'third'">
           <li class="case_result_li" v-for="(item, index) in result" :key="index">
             <div class="case_item" >
-              <div class="case_title">{{item.title}}<span>{{item.case_num}}</span></div>
+              <div class="case_title">{{item.title}}</div>
+              <div class="case_cont"><span>{{item.case_num}}</span></div>
               <div :class="case_nav_active_name=='second' ? 'case_all' : 'case_left'">
                 <div class="case_cont">受理法院：{{item.court}}</div>
                 <div class="case_cont">判决时间：{{item.judgement_date}}</div>
@@ -45,20 +46,29 @@
               <div class="case_right">
                 <div class="case_cont">判决状态：{{item.judge_type}}</div>
                 <div class="case_cont">发布时间：{{item.publish_date}}</div>
-                <div class="case_cont"><a href="#" @click="openUrl(item.source_url)">案件详细信息>></a></div>
+                <div class="case_cont"><a href="#" @click="CaseDetail(item.wenshu_id)">案件详细信息>></a></div>
               </div>
             </div>
           </li>
+          <div class="case_result_page">
+            <el-pagination
+              @current-change="handleCurrentChange"
+              :current-page.sync="currentPage"
+              :page-size="10"
+              layout="total, prev, pager, next"
+              :total="totalItems">
+            </el-pagination>
+          </div>
         </ul>
 
-        <ul class="case_result" v-if="result!=null" v-show="case_nav_active_name == 'second'">
+        <ul class="case_result" v-if="result!=null&&caseResult==null" v-show="case_nav_active_name == 'second' || case_nav_active_name == 'first'">
           <el-collapse v-model="activeName" accordion>
             <li class="case_result_li" v-for="(item, index) in result" :key="index">
-              <div class="case_item case_cursor" @click="openUrl('http://47.97.197.176/components/lawyerDetail.html?lawyer_name=' + item.name + '&lawyer_location=' + item.location)">
-                <div class="case_left">
+              <div class="case_lawyer_item case_cursor">
+                <div class="case_all">
                   <div class="case_title">{{item.name}}</div>
                   <div class="case_cont">律师事务所：{{item.location}}</div>
-                  <div class="case_cont">案件数量:{{item.num}}</div>
+                  <div class="case_cont">已收录当前案由全部案件数:{{item.num}}</div>
                 </div>
               </div>
               <el-collapse-item title="点击查看详细信息" :name=index >
@@ -70,21 +80,52 @@
                     <div class="lawyer_detail_cont"><span>执业年限：</span>{{lawyerDetailList[index].license_year || '暂无信息'}}</div>
                     <div class="lawyer_detail_cont"><span>执业状态：</span>{{lawyerDetailList[index].license_status || '暂无信息'}}</div> 
                     <div class="lawyer_detail_cont"><span>民族：</span>{{lawyerDetailList[index].nationality || '暂无信息'}}</div>
-                    <div class="lawyer_detail_cont"><span>总案件数：</span>{{lawyerDetailList[index].total_count || '暂无信息'}}</div>
-                    <div class="lawyer_detail_cont"><span>一审案件数：</span>{{lawyerDetailList[index].judge_count || '暂无信息'}}</div>
+                    <div class="lawyer_detail_cont"><span>已收录一审判决案件数：</span>{{lawyerDetailList[index].total_count || '暂无信息'}}</div>
+                    <div class="lawyer_detail_cont"><span>已收录当前案由一审判决案件数：</span>{{lawyerDetailList[index].judge_count || '暂无信息'}}</div>
                     <CaseBing  v-if="lawyerDetailList[index].detail && lawyerDetailList[index].detail.length > 0" :options='lawyerDetailList[index].detail || []'></CaseBing>
                      <div class="lawyer_detail_cont"  v-if="lawyerDetailList[index].detail && lawyerDetailList[index].detail.length > 0">
                       <div><span>案件列表:</span></div>
                         <li v-for="(v, i) in lawyerDetailList[index].detail[0].doc" :key="i">
-                          <a @click="openUrl('http://wenshu.court.gov.cn/content/content?DocID=' + v.wenshu_id)">{{v.title}}</a>
+                          <a @click="CaseDetail(v.wenshu_id)">{{v.title}}</a>
                         </li>
                      </div>
                   </ul>
-                  
                 </div>
               </el-collapse-item>
             </li>
           </el-collapse>
+          <div class="case_result_page">
+            <el-pagination
+              @current-change="handleCurrentChange"
+              :current-page.sync="currentPage"
+              :page-size="10"
+              layout="total, prev, pager, next"
+              :total="totalItems">
+            </el-pagination>
+          </div>
+        </ul>
+
+        <ul class="case_result" v-if="caseResult!=null">
+          <el-button class="case_detail_return" type="text" @click="CaseDetailReturn()"><<<返回列表</el-button>
+          <div class="case_detail_item">
+              <div v-if="caseResult">
+                 <div class="case_detail_title">{{caseResult.title}}</div>
+                 <div class="case_detail_middle">{{caseResult.case_num}}</div>
+                 <div class="case_detail_cont"><span>受理法院：</span>{{caseResult.court}}</div>
+                 <div class="case_detail_cont"><span>受理阶段：</span>{{caseResult.judicial_procedure2?caseResult.judicial_procedure2:caseResult.judicial_procedure1}}</div>
+                 <div class="case_detail_cont"><span>审理时间：</span>{{caseResult.judgement_date}}</div>
+                 <div class="case_detail_cont"><span>审理状态：</span>{{caseResult.judge_type}}</div>
+                 <div class="case_detail_cont"><span>代理人：</span>{{caseResult.party_info}}</div>
+                 <div class="case_detail_cont"><span>审判员：</span>{{caseResult.judge_person}}</div>
+                 <div class="case_detail_cont"><span>案情简介：</span>{{caseResult.trail_flow}}</div>
+                 <div class="case_detail_cont"><span>原告观点：</span>{{caseResult.plaintiff_point}}</div>
+                 <div class="case_detail_cont"><span>被告观点：</span>{{caseResult.defendant_point}}</div>
+                 <div class="case_detail_cont"><span>法院核实：</span>{{caseResult.court_verification}}</div>
+                 <div class="case_detail_cont"><span>法院观点：</span>{{caseResult.court_point}}</div>
+                 <div class="case_detail_cont"><span>审判结果：</span>{{caseResult.judge_result}}</div>
+              </div>
+              <div v-else>全力搜索中，请稍等。</div>
+            </div>
         </ul>
       </div>
   </div>
@@ -116,8 +157,9 @@
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
+      <el-button @click="reason3_input = '';reason4_input = '';reason5_input = '';">重新选择</el-button>
       <el-button @click="reasonFormVisible = false;reason3_input = '';reason4_input = '';reason5_input = '';">取 消</el-button>
-      <el-button type="primary" @click="reasonFormVisible = false;searchDetail(1)">确 定</el-button>
+      <el-button type="primary" @click="reasonFormVisible = false;searchDetail()">确 定</el-button>
     </div>
   </el-dialog>
 </div>
@@ -154,9 +196,49 @@ export default {
         lawyerDetailList: [],
         location: Loc.location,
         locationOptions: [],
+        tempTab: '',
+        caseResult: null,
+        currentPage: 1,
+        totalItems: 10,
+        subReasonData: null
     };
   },
   methods: {
+    handleCurrentChange(val) {
+      console.log(`当前页: ${val}`);
+      this.currentPage = val;
+      this.searchDetail();
+      document.documentElement.scrollTop = document.body.scrollTop = 0;
+    },
+    CaseDetailReturn(){
+      this.caseResult = null;
+    },
+    CaseDetail(id){
+      var that = this;
+      that.patentSearchloading = true;
+      Ajax(Config.AjaxUrl + '/query/case/case_doc',{
+        'reason': {
+           'reason_2': '知识产权与竞争纠纷'
+        },
+        'wenshu_id': id
+      },function(data){
+        that.patentSearchloading = false;
+        if(data.code == 0 && data.data.length !== 0){
+          document.documentElement.scrollTop = document.body.scrollTop = 0;
+          that.caseResult = data.data
+        }else{
+          that.$alert('未查询到相关结果', '', {
+            confirmButtonText: '确定',
+            showClose: false
+          })
+        }
+      },function(){
+        that.$alert('查询服务维护中，请稍后再试', '', {
+          confirmButtonText: '确定',
+          showClose: false
+        })
+      })
+    },
     handleLocation(value){
       console.log('handleLocation', value)
     },
@@ -166,10 +248,13 @@ export default {
       this.reason3_input = '';
       this.reason4_input = '';
       this.reason5_input = '';
+      this.caseResult = null;
+      this.subReasonData = null;
+      this.currentPage = 1;
       console.log(tab, event);
       console.log(this.case_nav_active_name)
     },
-    searchDetail(type, data){
+    searchDetail(){
       var that = this;
       that.caseSearchloading = true;
       that.lawyerDetailList = [];
@@ -177,8 +262,8 @@ export default {
         var reason = {
           reason_2: "知识产权与竞争纠纷"
         }
-        if(type == 0){
-          reason['reason_' + data.data[0].sub_reason_class] =  data.data[0].reason
+        if(that.subReasonData){
+          reason['reason_' + that.subReasonData.sub_reason_class] =  that.subReasonData.reason
         }else{
           if(that.reason5_input){
             reason.reason_5 = that.reason5_input
@@ -188,15 +273,20 @@ export default {
             reason.reason_3 = that.reason3_input
           }
         }
-        Ajax(Config.AjaxUrl + '/query/case/case_list',{
+        var postData = {
           'reason': reason,
-          'page_count': 20,
-          'page_num': 1 
-        },function(result){
+          'page_count': 10,
+          'page_num': that.currentPage
+        }
+        if(that.locationOptions[1]){
+          postData.region = that.locationOptions[1]
+        }
+        Ajax(Config.AjaxUrl + '/query/case/case_list',postData,function(result){
           that.caseSearchloading = false;
           console.log('result', result)
           if(result.code == 0){
             that.result = result.data
+            that.totalItems = result.max_page_num ? result.max_page_num * 10 : 10;
           }else{
             that.$alert('未查询到相关结果', '', {
               confirmButtonText: '确定',
@@ -214,7 +304,7 @@ export default {
         that.caseSearchloading = true;
         that.result = null
         var reason = {}
-        if(type == 0){
+        if(that.subReasonData){
           reason['reason_' + data.data[0].sub_reason_class] =  data.data[0].reason
         }else{
           if(that.reason5_input){
@@ -229,8 +319,8 @@ export default {
         }
         var postData = {
           'reason': reason,
-          'page_count': 20,
-          'page_num': 1 
+          'page_count': 10,
+          'page_num': that.currentPage
         }
         if(that.locationOptions[0]){
           postData.province = that.locationOptions[0]
@@ -241,7 +331,34 @@ export default {
         Ajax(Config.AjaxUrl + '/query/lawyer/lawyer_list',postData,function(result){
           that.caseSearchloading = false;
           if(result.code == 0){
-            that.result = result.data
+            that.result = result.data;
+            that.totalItems = result.max_page_num ? result.max_page_num * 10 : 10;
+          }else{
+            that.$alert('未查询到相关结果', '', {
+              confirmButtonText: '确定',
+              showClose: false
+            })
+          }
+        },function(){
+          that.caseSearchloading = false;
+          that.$alert('查询服务维护中，请稍后再试', '', {
+            confirmButtonText: '确定',
+            showClose: false
+          })
+        })
+      }else if(that.case_nav_active_name == 'first'){//律师查询
+        var that = this;
+        that.caseSearchloading = true;
+        that.result = null;
+        Ajax(Config.AjaxUrl + '/query/lawyer/lawyer_by_name',{
+          'page_count': 10,
+          'page_num': that.currentPage,
+          lawyer_name: that.caseInput
+        },function(result){
+          that.caseSearchloading = false;
+          if(result.code == 0){
+            that.result = result.data;
+            that.totalItems = result.max_page_num ? result.max_page_num * 10 : 10;
           }else{
             that.$alert('未查询到相关结果', '', {
               confirmButtonText: '确定',
@@ -270,6 +387,8 @@ export default {
           confirmButtonText: '确定',
           showClose: false
         })
+      }else if(that.case_nav_active_name == 'first'){
+         that.searchDetail()
       }else if(that.caseInput.length <= 30){
         that.reasonFormVisible = true
       }else{  //案件查询
@@ -279,7 +398,8 @@ export default {
           reason2: "知识产权与竞争纠纷"
         },function(data){
           if(data.code == 0){
-            that.searchDetail(0,data)
+            that.subReasonData = data.data[0]
+            that.searchDetail()
           }else{
             that.$alert('未查询到相关结果', '', {
               confirmButtonText: '确定',
@@ -411,7 +531,15 @@ export default {
     margin-bottom: 30px;
   }
   .case_item{
-    height: 170px;
+    height: 200px;
+    border: 1px solid #e1e2e5;
+    -webkit-box-shadow: 0 2px 4px rgba(0,0,0,.14);
+    box-shadow: 0 2px 4px rgba(0,0,0,.14);
+    padding: 11px;
+    border-radius: 3px;
+  }
+  .case_lawyer_item{
+    height: 160px;
     border: 1px solid #e1e2e5;
     -webkit-box-shadow: 0 2px 4px rgba(0,0,0,.14);
     box-shadow: 0 2px 4px rgba(0,0,0,.14);
@@ -422,7 +550,7 @@ export default {
     font-size: 0.18rem;
     font-weight: 700;
   }
-  .case_result_li .case_title span{
+  .case_result_li .case_cont span{
     font-size: 0.16rem;
     font-weight: 400;
     color:#00a1d7;
@@ -498,5 +626,43 @@ export default {
   }
   .case_result_li .lawyer_detail_cont span{
     color:#00a1d7;
+  }
+  .case_result .case_detail_item{
+    border: 1px solid #e1e2e5;
+    -webkit-box-shadow: 0 2px 4px rgba(0,0,0,.14);
+    box-shadow: 0 2px 4px rgba(0,0,0,.14);
+    padding: 10px 50px;
+    border-radius: 3px;
+    -moz-user-select:none; /*火狐*/
+    -webkit-user-select:none; /*webkit浏览器*/
+    -ms-user-select:none; /*IE10*/
+    -khtml-user-select:none; /*早期浏览器*/
+    user-select:none;
+  }
+  .case_result .case_detail_title{
+    font-size: 0.2rem;
+    font-weight: 700;
+    text-align: center;
+    margin: 10px 0;
+  }
+  .case_result .case_detail_middle{
+    text-align: center;
+    font-size: 0.16rem;
+    font-weight: 400;
+    color:#00a1d7;
+    padding: 0 0 0 10px;
+  }
+  .case_result .case_detail_cont{
+    padding: 10px 0;
+    font-size: 0.16rem;
+  }
+  .case_result .case_detail_cont span{
+    color:#00a1d7;
+    padding: 10px 0;
+    height: 42px;
+    font-size: 0.16rem;
+  }
+  .case_result .case_result_page{
+    text-align: center;
   }
 </style>
