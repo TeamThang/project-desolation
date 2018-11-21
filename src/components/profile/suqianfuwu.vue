@@ -9,6 +9,7 @@
       </el-tabs>
     </div>
     <div class="suqian_apply" v-show="suqianfuwu_nav_active_name=='second'">
+      <h3>保单</h3>
       <div class="suqian_apply_cont">请输入保单号:</div>
       <el-input v-model="suqian_input.baodan" placeholder="请输入保单号 "></el-input>
       <div class="suqian_apply_cont">请上传保单扫描件:</div>

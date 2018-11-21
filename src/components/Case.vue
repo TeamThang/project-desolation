@@ -61,7 +61,42 @@
           </div>
         </ul>
 
-        <ul class="case_result" v-if="result!=null&&caseResult==null" v-show="case_nav_active_name == 'second' || case_nav_active_name == 'first'">
+        <ul class="case_result" v-if="result!=null&&caseResult==null" v-show="case_nav_active_name == 'first'">
+          <el-collapse v-model="activeName" accordion>
+            <li class="case_result_li" v-for="(item, index) in result" :key="index">
+              <div class="case_lawyer_item case_cursor">
+                <div class="case_all">
+                  <div class="case_title">{{item.name}}</div>
+                  <div class="case_cont">律师事务所：{{item.location}}</div>
+                  <div class="case_cont">已收录当前案由全部案件数:{{item.num}}</div>
+                </div>
+              </div>
+              <el-collapse-item title="点击查看详细信息" :name=index >
+                <div class="lawyer_detail_case_count">
+                  <ul class="lawyer_detail_ul" v-if="lawyerDetailList[index]">
+                    <div class="lawyer_detail_cont"><span>性别：</span>{{lawyerDetailList[index].gender}}</div>
+                    <div class="lawyer_detail_cont"><span>学位：</span>{{lawyerDetailList[index].degree || '暂无信息'}}</div>
+                    <div class="lawyer_detail_cont"><span>执业证号：</span>{{lawyerDetailList[index].license_no || '暂无信息'}}</div>
+                    <div class="lawyer_detail_cont"><span>执业年限：</span>{{lawyerDetailList[index].license_year || '暂无信息'}}</div>
+                    <div class="lawyer_detail_cont"><span>执业状态：</span>{{lawyerDetailList[index].license_status || '暂无信息'}}</div> 
+                    <div class="lawyer_detail_cont"><span>民族：</span>{{lawyerDetailList[index].nationality || '暂无信息'}}</div>
+                    <div class="lawyer_detail_cont"><span>已收录一审判决案件数：</span>{{lawyerDetailList[index].total_count || '暂无信息'}}</div>
+                    <div class="lawyer_detail_cont"><span>已收录当前案由一审判决案件数：</span>{{lawyerDetailList[index].judge_count || '暂无信息'}}</div>
+                    <CaseBing  v-if="lawyerDetailList[index].detail && lawyerDetailList[index].detail.length > 0" :options='lawyerDetailList[index].detail || []'></CaseBing>
+                     <div class="lawyer_detail_cont"  v-if="lawyerDetailList[index].detail && lawyerDetailList[index].detail.length > 0">
+                      <div><span>案件列表:</span></div>
+                        <li v-for="(v, i) in lawyerDetailList[index].detail[0].doc" :key="i">
+                          <a @click="CaseDetail(v.wenshu_id)">{{v.title}}</a>
+                        </li>
+                     </div>
+                  </ul>
+                </div>
+              </el-collapse-item>
+            </li>
+          </el-collapse>
+        </ul>
+
+        <ul class="case_result" v-if="result!=null&&caseResult==null" v-show="case_nav_active_name == 'second'">
           <el-collapse v-model="activeName" accordion>
             <li class="case_result_li" v-for="(item, index) in result" :key="index">
               <div class="case_lawyer_item case_cursor">
@@ -358,7 +393,7 @@ export default {
           that.caseSearchloading = false;
           if(result.code == 0){
             that.result = result.data;
-            that.totalItems = result.max_page_num ? result.max_page_num * 10 : 10;
+            // that.totalItems = result.max_page_num ? result.max_page_num * 10 : 10;
           }else{
             that.$alert('未查询到相关结果', '', {
               confirmButtonText: '确定',
@@ -444,8 +479,10 @@ export default {
     },
     activeName(val){
       var that = this;
+      
       // that.lawyerDetailList = []
-      console.log('val',val)
+      console.log('val',val, typeof val)
+      if(val === '') return;
       console.log('that.result[val]',that.result[val]);
       console.log('value',!that.lawyerDetailList.length || !that.lawyerDetailList[val]);
       if(!that.lawyerDetailList.length || !that.lawyerDetailList[val]) {
@@ -457,16 +494,25 @@ export default {
           }else if(that.reason3_input){
             reason.reason_3 = that.reason3_input
           }
+        that.caseSearchloading = true;
         Ajax(Config.AjaxUrl + '/query/lawyer/lawyer_info',{
           lawyer_name: that.result[val].name,
           lawyer_location: that.result[val].location,
           reason: reason
         },function(data){
+          that.caseSearchloading = false;
           if(data.code == 0){
             that.lawyerDetailList.splice(val,0,data.data)
             console.log('律师信息', data.data)
+            that.$forceUpdate()
           }
-        },function(){})
+        },function(){
+          that.$alert('暂未查到该律师的相关信息', '', {
+            confirmButtonText: '确定',
+            showClose: false
+          })
+          that.caseSearchloading = false;
+        })
       }
 　　}
   }

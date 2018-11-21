@@ -69,8 +69,43 @@
           </li>
         </ul>
 
-         <ul class="patent_result" v-if="patentReCheckResult">
-            <div class="patent_item">
+          <ul class="patent_result" v-if="patentReCheckResult">
+            <el-collapse v-model="activeName" accordion>
+              <li class="patent_item" v-for="(item, index) in patentReCheckResult" :key="index">
+                <div class="case_title">{{item.dev_name}}</div>
+                <div class="case_spec"><span>决定日：</span>{{item.decision_date}}</div>
+                <div class="case_spec"><span>决定号：</span>{{item.decision_id}}</div>
+                <el-collapse-item title="详细信息">
+                  <div class="patent_result_li">
+                    <div class="case_spec_left">
+                      <div class="case_spec"><span>委内编号：</span>{{item.detail.weinei_no}}</div>
+                      <div class="case_spec"><span>申请（专利）号：</span>{{item.detail.patent_no}}</div>
+                      <div class="case_spec"><span>复审请求人：</span>{{item.detail.recheck_apply_person}}</div>
+                      <div class="case_spec"><span>授权公告日：</span>{{item.detail.auth_public_date}}</div>
+                      <div class="case_spec"><span>专利权人：</span>{{item.detail.apply_person}}</div>
+                      <div class="case_spec"><span>合议组组长：</span>{{item.detail.discussion_team_leader}}</div>
+                      <div class="case_spec"><span>国际分类号：</span>{{item.detail.classify_no}}</div>
+                    </div>
+                    <div class="case_spec_right">
+                      <div class="case_spec"><span>优先权日：</span>{{item.detail.priority_date}}</div>
+                      <div class="case_spec"><span>申请日：</span>{{item.detail.apply_date }}</div>
+                      <div class="case_spec"><span>无效请求人：</span>{{item.detail.invalid_apply_person}}</div>
+                      <div class="case_spec"><span>审定公告日：</span>{{item.detail.check_public_date}}</div>
+                      <div class="case_spec"><span>主审员：</span>{{item.detail.chief}}</div>
+                      <div class="case_spec"><span>参审员：</span>{{item.detail.participation}}</div>
+                      <div class="case_spec"><span>外观设计分类号：</span>{{item.detail.facade_classify_no}}</div>
+                    </div>
+                    <div class="case_spec"><span>法律依据：</span>{{item.detail.lawyer_according}}</div>
+                    <div class="case_spec"><span>决定要点：</span></div>
+                    <div class="case_spec">{{item.doc ? item.doc.point : '暂无数据'}}</div>
+                    <div class="case_spec"><span>全文：</span></div>
+                    <div class="case_spec">{{item.doc ? item.doc.full_text : '暂无数据'}}</div>
+                  </div>
+                </el-collapse-item>
+              </li>
+            </el-collapse>
+           
+           <!-- <div class="patent_item">
                <div class="case_title">{{patentReCheckResult.dev_name}}</div>
                <div class="case_spec_left">
                  <div class="case_spec"><span>决定号：</span>{{patentReCheckResult.decision_id}}</div>
@@ -97,7 +132,7 @@
                <div class="case_spec">{{patentReCheckResult.doc ? patentReCheckResult.doc.point : '暂无数据'}}</div>
                <div class="case_spec"><span>全文：</span></div>
                <div class="case_spec">{{patentReCheckResult.doc ? patentReCheckResult.doc.full_text : '暂无数据'}}</div>
-            </div>
+            </div> -->
          </ul>
         </div>
       </div>
@@ -130,6 +165,9 @@ export default {
     }
   },
   methods: {
+    LoadingReCheckDetail(){
+
+    },
     openUrl(url){
       window.open(url)
     },
@@ -190,10 +228,33 @@ export default {
             showClose: false
           })
         })
-      }else if(that.patent_nav_active_name == 'third' || that.patent_nav_active_name == 'fourth'){ //复审查询
+      }else if(that.patent_nav_active_name == 'third'){ //复审查询
         that.patentSearchloading = true;
-        Ajax(Config.PatentUrl + '/check_decision',{
-          patent_no: that.patentInput
+        Ajax(Config.PatentUrl + '/check_decision_detail',{
+          patent_no: that.patentInput,
+          check_type: 'recheck'
+        },function(data){
+          that.patentSearchloading = false;
+          if(data.code == 0 && data.data.length !== 0){
+            that.patentReCheckResult = data.data
+            if(!data.data.detail)that.patentReCheckResult.detail = {}
+          }else{
+            that.$alert('未查询到相关结果', '', {
+              confirmButtonText: '确定',
+              showClose: false
+            })
+          }
+        },function(){
+          that.$alert('查询服务维护中，请稍后再试', '', {
+            confirmButtonText: '确定',
+            showClose: false
+          })
+        })
+      } else if(that.patent_nav_active_name == 'fourth'){ //无效查询
+        that.patentSearchloading = true;
+        Ajax(Config.PatentUrl + '/check_decision_detail',{
+          patent_no: that.patentInput,
+          check_type: 'invalid'
         },function(data){
           that.patentSearchloading = false;
           if(data.code == 0 && data.data.length !== 0){
@@ -348,6 +409,8 @@ export default {
     -ms-user-select:none; /*IE10*/
     -khtml-user-select:none; /*早期浏览器*/
     user-select:none;
+    list-style: none;
+    margin-bottom: 20px;
   }
   .patent_item .patent_img_wrap{
     width: 100%;
@@ -392,11 +455,11 @@ export default {
     padding: 0 0 0 10px;
   }
   .patent_item .case_spec_left{
-    width: 439px;
+    width: 418px;
     float: left;
   }
   .patent_item .case_spec_right{
-    width: 439px;
+    width: 418px;
     float: left;
   }
   .patent_item .case_spec{
@@ -433,5 +496,36 @@ export default {
   .patent_item .patent_spec a{
     cursor: pointer;
     text-decoration: underline;
+  }
+  .patent_result .el-collapse-item__wrap{
+    width: 100%;
+  }
+  .patent_result .el-collapse-item__header{
+    height: 150px;
+    width: 100px;
+    float: right;
+    margin-top: -140px;
+    font-size: 0.15rem;
+    line-height: 150px;
+    position: relative;
+    background: transparent;
+    border-bottom: none;
+    color:#00a1d7;
+  }
+  .patent_result .el-collapse-item__header .el-collapse-item__arrow{
+    line-height: 150px;
+    position: absolute;
+    right: 0;
+  }
+  .patent_result .el-collapse-item__content{
+    background-color: #f8f8f8;
+    padding: 20px;
+    background-color: #f8f8f8;
+    border-top: 1px solid #e1e2e5;
+    border-bottom: 1px solid #e1e2e5;
+    border-right: 1px solid #e1e2e5;
+    border-left: 1px solid #e1e2e5;
+    -webkit-box-shadow: 0 2px 4px rgba(0,0,0,.14);
+    box-shadow: 0 2px 4px rgba(0,0,0,.14);
   }
 </style>
