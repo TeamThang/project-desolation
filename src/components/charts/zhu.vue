@@ -24,9 +24,7 @@ export default {
   },
   methods: {
     initChart() {
-      console.log('this.options', this.options);
       var series = []
-      console.log('series', series)
       this.chart = new Highcharts.Chart(this.$el, {
         chart: {
           plotBackgroundColor: null,
@@ -35,21 +33,33 @@ export default {
           type: 'column',
           backgroundColor: "#f8f8f8"
         },
-        colors: ['#7cb5ec', '#434348', '#90ed7d', '#f7a35c', '#8085e9', '#f15c80', '#e4d354', '#8085e8', '#8d4653', '#91e8e1'],
+        colors: Highcharts.map(['#6b93d3', '#5ac1cd', '#6dd5b4', '#a7e6a0', '#cbf2c5', '#f4e0ae', '#fcf39c'], function (color) {
+            return {
+                linearGradient: { x1:0, y1:0, x2:0, y2:1 },
+                stops: [
+                    [0, color], // darken
+                    [1, Highcharts.Color(color).brighten(-0.3).get('rgb')]
+                ]
+            };
+        }),
         title: {
           text: this.options.name + '状态情况'
         },
-        yAxis: {
-      		min: 0,
-      		title: {
-      			text: '数量 (件)'
-      		}
-        },
         xAxis: {
-      		type: 'category'
-      	},
-        tooltip: {
-          pointFormat: '{series.name}: <b>{point.y:.1f}件</b>'
+          categories: ['申请阶段', '授权阶段']
+        },
+        yAxis: {
+          min: 0,
+          title: {
+            text: '案件数量'
+          },
+          stackLabels: {  // 堆叠数据标签
+            enabled: true,
+            style: {
+              fontWeight: 'bold',
+              color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
+            }
+          }
         },
         plotOptions: {
           pie: {
@@ -57,17 +67,19 @@ export default {
             cursor: 'pointer',
             dataLabels: {
               enabled: true,
-              format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+              format: '<b>{point.name}</b>: {point.y} 件',
               style: {
                 color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
               }
             }
           }
         },
-        series: [{
-          name: '案件数量',
-          data: this.options.data
-        }]
+        series: this.options.data
+      }, function(chart){
+        console.log('chart', chart)
+        chart.renderTo.addEventListener("click",function(e) {
+          console.dir(e.target); 
+        });
       });
     }
   }

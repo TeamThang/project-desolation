@@ -1,9 +1,9 @@
 <template>
 <el-row class="head-el-row" type="flex" justify="center">
-  <el-col :span="3">
+  <el-col :span="9">
     <div class="head-item">
       <router-link class="head-logo" to="/home">
-        法宝贝
+        知识产权保险服务平台
       </router-link>
     </div>
   </el-col>
@@ -85,8 +85,8 @@ import Config from "./../lib/config";
         isLogin: false,
         right: {
           'F': [{name:'专利信息查询', path: '/patent'},{name: '专利代理信息查询', path: '/agent'},{name:'诉讼案件查询',path:'/case'},{name:'知识产权保险',path:'/insurance'},{name:'法规培训',path:'/learning'}],
-          'P': [{name:'专利信息查询', path: '/patent'},{name:'代理信息查询',path:'/agent'},{name:'律所信息查询',path:'lawoffice'},{name:'知识产权保险',path:'/insurance'},{name:'律师推荐',path:'/lawyer'}],
-          'B': [{name:'代理信息查询',path: '/agent'},{name:'诉前服务',path:'/litigation'},{name:'律师推荐',path:'/lawyer'}]
+          'P': [{name:'专利信息查询', path: '/patent'},{name:'专利代理信息查询',path:'/agent'},{name:'诉讼案件查询',path:'lawoffice'},{name:'知识产权保险',path:'/insurance'}],
+          'B': [{name:'专利代理信息查询',path: '/agent'},,{name:'诉讼案件查询',path:'/lawyer'}]
         },
         headItem: []
       }
@@ -98,9 +98,10 @@ import Config from "./../lib/config";
             console.log('getCurrentUser', data)
             if(data.code == 0){
               that.name = data.data.name || data.data.account
+              that.$store.commit('setUserName', that.name)
               that.isLogin = true
               that.headItem = that.right[data.data.level]
-              console.log('headItem',that.headItem)
+              that.$store.commit('setUserLevel', data.data.level)
             } else {
               that.name = '游客'
             }
@@ -116,6 +117,7 @@ import Config from "./../lib/config";
             if(data.code == 0){
               that.name = '游客'
               that.isLogin = false
+              that.$store.commit('setUserName', null)
               location.reload()
             } else {
             }
@@ -123,7 +125,7 @@ import Config from "./../lib/config";
         })
     }
   },
-  mounted: function() {
+  created: function() {
     this.getCurrentUser()
   }
   }

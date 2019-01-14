@@ -54,7 +54,7 @@ export default {
 <style>
   .ins_wrap{
     overflow: hidden;
-    width: 1280px;
+    width: 1080px;
     margin: 10px auto 40px;
     border-radius: 4px;
   }

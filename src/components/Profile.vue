@@ -5,12 +5,12 @@
       <div class="info_left">
         <div class="info_title">个人中心</div>
         <ul>
-          <li>
-            <router-link :to="{ name: 'profile_info'}">
-              <el-button>基本信息</el-button>
+          <li v-for="item in right[level]">
+            <router-link :to="{ name: item.path}">
+              <el-button>{{item.title}}</el-button>
             </router-link>
           </li>
-          <li>
+          <!-- <li>
             <router-link :to="{ name: 'profile_modifyInfo'}">
               <el-button>修改资料</el-button>
             </router-link>
@@ -54,10 +54,7 @@
             <router-link :to="{ name: 'suzhongfuwu'}">
               <el-button>诉中服务</el-button>
             </router-link>
-          </li>
-          <li>
-            <el-button>其他</el-button>
-          </li>
+          </li> -->
         </ul>
       </div>
       <div class="info_right">
@@ -90,7 +87,12 @@
         activeIndex: '1',
         activeIndex2: '1',
         name: '',
-        info: {}
+        info: {},
+        right: {
+          'F': [{title:'基本信息', path: 'profile_info'},{title: '修改资料', path: 'profile_modifyInfo'},{title:'我的头像',path:'profile_avatar'},{title:'绑定邮箱',path:'profile_modifyEmail'},{title:'绑定手机号',path:'Profile_modifyPhone'},{title:'修改密码',path:'profile_password'},{title:'保单管理',path:'baodan'},{title:'保险报案管理',path:'baoxianbaoan'},{title:'诉讼案件管理',path:'susong'},{title:'诉前服务',path:'suqianfuwu'},{title:'诉中服务',path:'suzhongfuwu'}],
+          'P': [{title:'基本信息', path: 'profile_info'},{title: '修改资料', path: 'profile_modifyInfo'},{title:'我的头像',path:'profile_avatar'},{title:'绑定邮箱',path:'profile_modifyEmail'},{title:'绑定手机号',path:'Profile_modifyPhone'},{title:'修改密码',path:'profile_password'},{title:'保单管理',path:'baodan'},{title:'保险报案管理',path:'baoxianbaoan'},{title:'诉讼案件管理',path:'susong'},{title:'我的头像',path:'profile_avatar'},{title:'绑定邮箱',path:'profile_modifyEmail'},{title:'绑定手机号',path:'Profile_modifyPhone'},{title:'修改密码',path:'profile_password'},{title:'诉前服务',path:'suqianfuwu'},{title:'诉中服务',path:'suzhongfuwu'}],
+          'B': [{title:'基本信息', path: 'profile_info'},{title: '修改资料', path: 'profile_modifyInfo'},{title:'我的头像',path:'profile_avatar'},{title:'绑定邮箱',path:'profile_modifyEmail'},{title:'绑定手机号',path:'Profile_modifyPhone'},{title:'修改密码',path:'profile_password'},{title:'保单管理',path:'baodan'},{title:'保险报案管理',path:'baoxianbaoan'},{title:'诉讼案件管理',path:'susong'},{title:'诉前服务',path:'suqianfuwu'},{title:'诉中服务',path:'suzhongfuwu'}]
+        }
       };
     },
     methods: {
@@ -98,8 +100,12 @@
         console.log(key, keyPath);
       },
       getInfo(key, keyPath) {
-        console.log('Config',Config)
         var that = this;
+        console.log('Config',Config)
+        console.log('level', this.$store.state.level)
+        setTimeout(function(){
+          console.log('level', that.$store.state.level)
+        },5000)
         Ajax(Config.AjaxUrl + '/account/query','get',function(data){
             if(data.code == 0){
               that.name = data.data.name || data.data.account;
@@ -123,8 +129,14 @@
         })
       }
     },
-    mounted: function() {
+    created: function() {
       this.getInfo()
+    },
+    computed: {
+      level() {
+        console.log('a')
+        return this.$store.state.level
+      }
     }
   }
 </script>

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div id="highchartsContainer"></div>
+    <div :id="'highchartsContainer' + ind"></div>
     <div v-if="zhu.length > 0">
       <div v-for="items in zhu">
         <Zhu :options='items'></Zhu>
@@ -20,7 +20,7 @@ HighchartsDrilldown(Highcharts);
 Highcharts3D(Highcharts);
 
 export default {
-  props: ['options', 'styles'],
+  props: ['options', 'ind', 'styles'],
   name: 'highcharts',
   components:{
     Zhu: Zhu
@@ -33,16 +33,19 @@ export default {
   },
   mounted() {
     this.initChart();
+    console.log('this.ind', this.ind)
   },
   methods: {
     initChart() {
+      var that = this;
       var series = []
       var zhuData = []
+      console.log('this.options.total', that.ind, that.options.total)
       for(var key in this.options.total) {
-        if(this.options.total[key] != 0) {
+        if(that.options.total[key] != 0) {
           series.push({
             name: key,
-            y: this.options.total[key]
+            y: that.options.total[key]
           })
           /* 
           授权阶段_信息变更:0
@@ -53,21 +56,56 @@ export default {
           申请阶段_在审:0
           申请阶段_撤回:0
           申请阶段_驳回:0 */
-          this.zhu.push({
+          that.zhu.push({
             name: key,
             data: [
-              ['授权阶段_信息变更',this.options[key]['授权阶段_信息变更']],
-              ['授权阶段_失效',this.options[key]['授权阶段_失效']],
-              ['授权阶段_授权',this.options[key]['授权阶段_授权']],
-              ['授权阶段_无效',this.options[key]['授权阶段_无效']],
-              ['授权阶段_许可',this.options[key]['授权阶段_许可']],
-              ['申请阶段_在审',this.options[key]['申请阶段_在审']],
-              ['申请阶段_撤回',this.options[key]['申请阶段_撤回']],
-              ['申请阶段_驳回',this.options[key]['申请阶段_驳回']]]
+              {
+                name: '申请阶段_在审',
+                data: [this.options[key]['申请阶段_在审'], 0]
+              },
+              {
+                name: '申请阶段_撤回',
+                data: [this.options[key]['申请阶段_撤回'], 0]
+              },
+              {
+                name: '申请阶段_驳回',
+                data: [this.options[key]['申请阶段_驳回'], 0]
+              },
+              {
+                name: '授权阶段_信息变更',
+                data: [0, this.options[key]['授权阶段_信息变更']]
+              },
+              {
+                name: '授权阶段_失效',
+                data: [0, this.options[key]['授权阶段_失效']]
+              },
+              {
+                name: '授权阶段_授权',
+                data: [0, this.options[key]['授权阶段_授权']]
+              },
+              {
+                name: '授权阶段_无效',
+                data: [0, this.options[key]['授权阶段_无效']]
+              },
+              {
+                name: '授权阶段_许可',
+                data: [0, this.options[key]['授权阶段_许可']]
+              }
+            ]
+            // data: [
+            //   ['授权阶段_信息变更',this.options[key]['授权阶段_信息变更']],
+            //   ['授权阶段_失效',this.options[key]['授权阶段_失效']],
+            //   ['授权阶段_授权',this.options[key]['授权阶段_授权']],
+            //   ['授权阶段_无效',this.options[key]['授权阶段_无效']],
+            //   ['授权阶段_许可',this.options[key]['授权阶段_许可']],
+            //   ['申请阶段_在审',this.options[key]['申请阶段_在审']],
+            //   ['申请阶段_撤回',this.options[key]['申请阶段_撤回']],
+            //   ['申请阶段_驳回',this.options[key]['申请阶段_驳回']]]
           })
         }
       }
-      this.chart = new Highcharts.Chart('highchartsContainer', {
+      console.log('series', series)
+      that.chart = new Highcharts.Chart('highchartsContainer'+ that.ind, {
         chart: {
           plotBackgroundColor: null,
           plotBorderWidth: null,
@@ -75,12 +113,20 @@ export default {
           type: 'pie',
           backgroundColor: "#f8f8f8"
         },
-        colors: ['#7cb5ec', '#434348', '#90ed7d', '#f7a35c', '#8085e9', '#f15c80', '#e4d354', '#8085e8', '#8d4653', '#91e8e1'],
+        colors: Highcharts.map(['#6b93d3', '#5ac1cd', '#6dd5b4', '#a7e6a0', '#cbf2c5', '#f4e0ae', '#fcf39c'], function (color) {
+            return {
+                radialGradient: { cx: 0.5, cy: 0.3, r: 0.7 },
+                stops: [
+                    [0, Highcharts.Color(color).brighten(+0.3).get('rgb')],
+                    [1, color] // darken
+                ]
+            };
+        }),
         title: {
           text: '案件分布'
         },
         tooltip: {
-          pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+          pointFormat: '{point.name}: <b>{point.y}件</b>'
         },
         plotOptions: {
           pie: {
@@ -88,7 +134,7 @@ export default {
             cursor: 'pointer',
             dataLabels: {
               enabled: true,
-              format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+              format: '<b>{point.name}</b>: {y}件',
               style: {
                 color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
               }

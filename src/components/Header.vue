@@ -190,7 +190,7 @@ body {
   overflow: auto;
   color: white;
   line-height: 0.47rem;
-  min-width: 100%;
+  width: 100%;
   position: fixed;
   top: 0;
   -webkit-transform: translateZ(0);

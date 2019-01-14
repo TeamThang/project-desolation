@@ -2,7 +2,7 @@
 
 	<div class="lgContain">
 		<div class="lgDetail pull-right">
-			<div class="bg">法宝贝</div>
+			<div class="bg">知识产权保险服务平台</div>
       <p class="tips">{{tips}} </p>
 			<input type="text" v-model="account" placeholder="请输入用户名或者邮箱或手机号" class="userNameLg" />
 			<input type="password" v-model="password" placeholder="请输入密码" class="passWordLg" />
@@ -68,7 +68,7 @@ export default {
         }
         Ajax(Config.AjaxUrl + '/auth/login',loginData,function(data){
           if(data.code == 0) {
-            console.log('cookie', document.cookie)
+            that.$store.commit('setUserName', that.account)
             that.$router.push({ path: "/home" });
           }else{
             that.tips = data.msg
@@ -169,7 +169,7 @@ export default {
   border-bottom: 0.01rem solid #ccc;
   width: 100%;
   line-height: 0.5rem;
-  font-size: 0.4rem;
+  font-size: 0.3rem;
   font-weight: 700;
   color: #277ce1;
 }

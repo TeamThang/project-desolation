@@ -50,12 +50,20 @@ export default {
           type: 'pie',
           backgroundColor: "#f8f8f8"
         },
-        colors: ['#7cb5ec', '#434348', '#90ed7d', '#f7a35c', '#8085e9', '#f15c80', '#e4d354', '#8085e8', '#8d4653', '#91e8e1'],
+        colors: Highcharts.map(['#6b93d3', '#5ac1cd', '#6dd5b4', '#a7e6a0', '#cbf2c5', '#f4e0ae', '#fcf39c'], function (color) {
+            return {
+                radialGradient: { cx: 0.5, cy: 0.3, r: 0.7 },
+                stops: [
+                    [0, Highcharts.Color(color).brighten(+0.3).get('rgb')],
+                    [1, color] // darken
+                ]
+            };
+        }),
         title: {
           text: '案由分布'
         },
         tooltip: {
-          pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+          pointFormat: '{series.name}: <b>{y}件</b>'
         },
         plotOptions: {
           pie: {
@@ -63,7 +71,7 @@ export default {
             cursor: 'pointer',
             dataLabels: {
               enabled: true,
-              format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+              format: '<b>{point.name}</b>: {y}件',
               style: {
                 color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
               }
@@ -85,5 +93,8 @@ export default {
   .highcharts-container {
     width: 900px;
     height: 300px;
+  }
+  .highcharts-credits{
+    display: none;
   }
 </style>

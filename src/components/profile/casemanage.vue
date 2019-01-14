@@ -36,7 +36,6 @@
 <style>
   .casemanage_info {
     padding: 22px 0;
-    border-bottom: 1px solid #e5e9ef;
     position: relative;
   }
   .el-tabs__item{

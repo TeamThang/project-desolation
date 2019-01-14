@@ -340,7 +340,7 @@ export default {
         that.result = null
         var reason = {}
         if(that.subReasonData){
-          reason['reason_' + data.data[0].sub_reason_class] =  data.data[0].reason
+          reason['reason_' + that.subReasonData.sub_reason_class] =  that.subReasonData.reason
         }else{
           if(that.reason5_input){
             reason.reason_5 = that.reason5_input
@@ -528,7 +528,7 @@ export default {
   }
   .case_wrap{
     overflow: hidden;
-    width: 1280px;
+    width: 1080px;
     margin: 10px auto 40px;
     border-radius: 4px;
   }

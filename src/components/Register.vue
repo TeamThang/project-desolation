@@ -2,7 +2,7 @@
 
   <div class="lgContain">
     <div class="lgDetail pull-right">
-      <div class="bg">法宝贝</div>
+      <div class="bg">知识产权保险服务平台</div>
       <p class="tips">{{tips}}</p>
       <input type="text" placeholder="请输入账号" v-model="account" class="userNameLg" />
       <input type="password" placeholder="请输入密码" v-model="password" class="passWordLg" />
