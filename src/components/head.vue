@@ -84,9 +84,11 @@ import Config from "./../lib/config";
         name: '',
         isLogin: false,
         right: {
-          'F': [{name:'专利信息查询', path: '/patent'},{name: '专利代理信息查询', path: '/agent'},{name:'诉讼案件查询',path:'/case'},{name:'知识产权保险',path:'/insurance'},{name:'法规培训',path:'/learning'}],
-          'P': [{name:'专利信息查询', path: '/patent'},{name:'专利代理信息查询',path:'/agent'},{name:'诉讼案件查询',path:'lawoffice'},{name:'知识产权保险',path:'/insurance'}],
-          'B': [{name:'专利代理信息查询',path: '/agent'},,{name:'诉讼案件查询',path:'/lawyer'}]
+          'F': [],
+          'Z': [{name:'专利信息查询', path: '/patent'},{name: '专利代理信息查询', path: '/agent'},{name:'诉讼案件查询',path:'/case'},{name:'知识产权保险',path:'/insurance'}],
+          'B': [{name:'专利代理信息查询',path: '/agent'},{name:'诉讼案件查询',path:'/lawyer'},{name:'知识产权保险',path:'/insurance'},{name:'法规培训',path:'/learning'}],
+          'C': [{name:'专利代理信息查询',path: '/agent'},{name:'诉讼案件查询',path:'/lawyer'},{name:'知识产权保险',path:'/insurance'},{name:'法规培训',path:'/learning'}],
+          'P': [{name:'专利信息查询', path: '/patent'},{name: '专利代理信息查询', path: '/agent'},{name:'诉讼案件查询',path:'/case'},{name:'知识产权保险',path:'/insurance'},{name:'法规培训',path:'/learning'}]
         },
         headItem: []
       }
